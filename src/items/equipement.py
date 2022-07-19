@@ -16,7 +16,7 @@ class Equipement(Item):
         type: str,
         illu_url: str,
         bonus: list[Bonus],
-        cond: list[Condition],
+        cond: tuple[list[Condition], str],
     ):
         super().__init__(
             url,
@@ -33,7 +33,10 @@ class Equipement(Item):
     def to_dict(self) -> dict:
         data = super().to_dict()
         data['bonus'] = [b.to_dict() for b in self.bonus]
-        data['conditions'] = [c.to_dict() for c in self.cond]
+        data['conditions'] = {
+            'valeurs': [c.to_dict() for c in self.cond[0]],
+            'bool_op': self.cond[1]
+        }
         return data
 
 
@@ -77,9 +80,9 @@ class Arme(Equipement):
         data = super().to_dict()
         data['dommages'] = [d.to_dict() for d in self.dommages]
         data['PA'] = self.PA
-        data['n_uses'] = self.n_uses
+        data['n_utilisations'] = self.n_uses
         data['PO'] = self.PO
-        data['critical_chance'] = self.critical_chance
-        data['critical_bonus'] = self.critical_bonus
+        data['taux_critique'] = self.critical_chance
+        data['bonus_critique'] = self.critical_bonus
         return data
 

@@ -28,7 +28,7 @@ class Item(DofusData):
             'url': self.url,
             'nom': self.name,
             'description': self.desc,
-            'level': self.level,
+            'niveau': self.level,
             'type': self.type,
             'illustration_url': self.illu_url
         }

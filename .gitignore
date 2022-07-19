@@ -2,3 +2,5 @@
 geckodriver.log
 *.bkp
 *.db
+data
+*.swp

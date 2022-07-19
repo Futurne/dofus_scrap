@@ -16,7 +16,7 @@ class ScrapEquipement(ScrapItem):
     def __init__(self, driver: webdriver.Firefox, item_url: str):
         super().__init__(driver, item_url)
         self.item_bonus = []
-        self.item_conditions = []
+        self.item_conditions = ([], None)
 
     def scrap_effects(self):
         element = ScrapEquipement.get_panel_attributes(self.driver, 'effets')
@@ -35,7 +35,8 @@ class ScrapEquipement(ScrapItem):
 
         conditions = element.find_element(By.CLASS_NAME, 'ak-panel-content')
         conditions = conditions.text
-        conditions = conditions.split(' et\n')
+        bool_op = 'et' if 'et' in conditions else 'ou'
+        conditions = conditions.split(f' {bool_op}\n')
 
         def cond_from_str(cond: str) -> Range:
             assert '<' in cond or '>' in cond
@@ -46,7 +47,7 @@ class ScrapEquipement(ScrapItem):
             else:
                 return Range(element, (int(value) + 1, 0))
 
-        self.item_conditions = [cond_from_str(c) for c in conditions]
+        self.item_conditions = ([cond_from_str(c) for c in conditions], bool_op)
 
     def scrap(self):
         """Scrap the item page and collect all data.

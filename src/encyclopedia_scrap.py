@@ -162,8 +162,8 @@ class EncyclopediaScrap:
                 data.append(item.to_dict())
 
             # Save the data at the end of the page
-            with open(filename, 'w') as json_file:
-                json.dump(data, json_file)
+            with open(filepath, 'w') as json_file:
+                json.dump(data, json_file, ensure_ascii=False)
 
             # Update the encyclopedia state
             state[category_name] += 1

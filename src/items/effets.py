@@ -10,7 +10,7 @@ class Range(Bonus, Condition):
         self.range = range
 
     def to_dict(self) -> dict:
-        return {'name': self.name, 'range': self.range}
+        return {'élément': self.name, 'range': self.range}
 
 
 class Special(Bonus, Condition):
@@ -18,7 +18,7 @@ class Special(Bonus, Condition):
         self.special = special
 
     def to_dict(self) -> dict:
-        return {'special': self.special}
+        return {'spécial': self.special}
 
 
 class Dommage(Range):
@@ -28,6 +28,6 @@ class Dommage(Range):
 
     def to_dict(self) -> dict:
         data = super().to_dict()
-        data['steal'] = self.steal
+        data['vol'] = self.steal
         return data
 
