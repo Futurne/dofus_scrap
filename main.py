@@ -4,7 +4,7 @@
 import os
 import argparse
 
-from src.almanax_scrap import ScrapAlmanax
+from src.almanax.almanax_scrap import ScrapAlmanax
 from src.encyclopedia_scrap import BASENAME_URLS, EncyclopediaScrap
 
 

@@ -7,6 +7,7 @@ from pprint import pprint
 
 from src.scrap.item import ScrapItem
 from src.scrap.equipement import ScrapArme, ScrapEquipement
+from src.scrap.recette import ScrapRecette
 from src.encyclopedia_scrap import EncyclopediaScrap
 
 if __name__ == '__main__':
@@ -16,15 +17,19 @@ if __name__ == '__main__':
     # scrap = EncyclopediaWeapon(scrap.driver, 'https://www.dofus.com/fr/mmorpg/encyclopedie/armes/20353-crocobur')
     # scrap = EncyclopediaWeapon(scrap.driver, 'https://www.dofus.com/fr/mmorpg/encyclopedie/armes/19270-arc-corrompu')
     # scrap = EncyclopediaWeapon(scrap.driver, 'https://www.dofus.com/fr/mmorpg/encyclopedie/equipements/14076-coiffe-comte-harebourg')
+    """
     scrap = ScrapEquipement(scrap.driver, 'https://www.dofus.com/fr/mmorpg/encyclopedie/equipements/14162-sangle-ouare')
     scrap.scrap()
     print(scrap)
     pprint(scrap.to_item().to_dict())
+    """
 
-    scrap = ScrapArme(scrap.driver, 'https://www.dofus.com/fr/mmorpg/encyclopedie/armes/19096-marteau-katrepat')
+    url = 'https://www.dofus.com/fr/mmorpg/encyclopedie/armes/19096-marteau-katrepat'
+    scrap = ScrapArme(scrap.driver, url)
     scrap.scrap()
-    print('\n\n', scrap)
-    pprint(scrap.to_item().to_dict())
+    item = scrap.to_item()
+    scrap = ScrapRecette(scrap.driver, url, item.name)
+    scrap.scrap()
     scrap.driver.quit()
 
     """

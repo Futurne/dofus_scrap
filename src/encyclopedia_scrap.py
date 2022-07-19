@@ -6,16 +6,17 @@ Uses selenium to keep a human-like session.
 
 import os
 import time
+import json
 from collections import defaultdict
 
 import yaml
-import pandas as pd
 from tqdm import tqdm
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 
-from src.encyclopedia_item import EncyclopediaItem
+from src.scrap.equipement import ScrapEquipement, ScrapArme
+from src.scrap.recette import ScrapRecette
 
 
 BASENAME_URLS = {
@@ -125,22 +126,21 @@ class EncyclopediaScrap:
         """
         max_page_number = self.total_pages(category_url)
         category_name = self.category_name(category_url).lower()
-        filepath = f'data/{category_name}.csv'
+        filepath = f'data/{category_name}.json'
 
         # Load the existing df if possible
         if os.path.exists(filepath):
-            df = pd.read_csv(filepath)
+            with open(filename, 'r') as json_file:
+                data = json.load(json_file)
         else:
-            df = pd.DataFrame(
-                columns=[
-                    'url',
-                    'name',
-                    'description',
-                    'type',
-                    'level',
-                    'illustration_url',
-                ]
-            )
+            data = list()
+
+        if category_name == 'armes':
+            scrap_class = ScrapArme
+        elif category_name == 'equipements':
+            scrap_class = ScrapEquipement
+        else:
+            raise RuntimeError(f'Category {category_name} is not supported yet!')
 
         # Load the existing encyclopedia state if possible
         state = defaultdict(int)
@@ -156,13 +156,14 @@ class EncyclopediaScrap:
                 if self.check_404(item_url):
                     continue
 
-                scrap_item = EncyclopediaItem(self.driver, item_url)
+                scrap_item = scrap_class(self.driver, item_url)
                 scrap_item.scrap()
+                item = scrap_item.to_item()
+                data.append(item.to_dict())
 
-                df = scrap_item.add_to_df(df)
-
-            # Save the df at the end of the page
-            df.to_csv(f'data/{category_name}.csv', index=False)
+            # Save the data at the end of the page
+            with open(filename, 'w') as json_file:
+                json.dump(data, json_file)
 
             # Update the encyclopedia state
             state[category_name] += 1

@@ -133,10 +133,14 @@ class ScrapArme(ScrapEquipement):
         # CC
         cc_chance = re.search(r'\d+\/\d+', CC_str).group()
         num, denom = cc_chance.split('/')
-        self.critical_chance = int(num) / int(denom)
-        cc_bonus = re.search(r'\(\+\d+\)', CC_str).group()
-        cc_bonus = cc_bonus[1:-1]  # Remove parenthesis
-        self.critical_bonus = int(cc_bonus)
+        if int(denom) != 0:
+            self.critical_chance = int(num) / int(denom)
+            cc_bonus = re.search(r'\(\+\d+\)', CC_str).group()
+            cc_bonus = cc_bonus[1:-1]  # Remove parenthesis
+            self.critical_bonus = int(cc_bonus)
+        else:
+            self.critical_chance = 0
+            self.critical_bonus = 0
 
     def scrap_effects(self):
         element = self.driver.find_element(By.CLASS_NAME, 'ak-content-list')
