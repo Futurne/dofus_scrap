@@ -31,6 +31,8 @@ VALID_CONTAINER_TITLES = {
     'bonus',
     'sorts',
     'de la même famille',
+    "comment l'obtenir ?",
+    'issu du croisement',
 }
 
 
@@ -99,28 +101,39 @@ class ScrapItem:
             self.data[category.lower()] = ScrapItem.scrap_container(element)
 
     def to_dict(self) -> dict:
-        return {
+        data = {
             'nom': self.item_name,
             'url': self.url,
             'illustration_url': self.illustration_url,
             'type': self.item_type,
-            'niveau': self.item_level,
             'containers': {
                 category: value
-                for category, value in self.data.items
+                for category, value in self.data.items()
                 if value not in [[], '']
             },
         }
+
+        if self.item_level != '':
+            data['niveau'] = self.item_level
+
+        if self.item_type != '':
+            data['type'] = self.item_type
+
+        return data
 
     @staticmethod
     def valid_container(element: WebElement) -> bool:
         title_count, content_count = 0, 0
         for child in element.find_elements(By.XPATH, './*'):
-            if TITLE_CLASS in child.get_attribute('class')\
-                    and child.text.lower() in VALID_CONTAINER_TITLES:
-                title_count += 1
+            if TITLE_CLASS in child.get_attribute('class'):
+                title = child.text.lower()
+                title_count += int(any(
+                    title.startswith(v) for v in VALID_CONTAINER_TITLES
+                ))  # Valid only if it starts with one of the valid container titles
+
             if CONTENT_CLASS in child.get_attribute('class'):
                 content_count += 1
+
         return title_count == 1 and content_count == 1
 
     @staticmethod

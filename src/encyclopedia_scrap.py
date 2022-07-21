@@ -15,8 +15,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 
-from src.scrap.equipement import ScrapEquipement, ScrapArme
-from src.scrap.recette import ScrapRecette
 from src.encyclopedia_item import ScrapItem
 
 
