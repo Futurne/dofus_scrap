@@ -26,11 +26,11 @@ VALID_CONTAINER_TITLES = {
     'caractéristiques',
     'résistances',
     'butins',
-    'butins conditionnés',
     'effets',
     'recette',
     'bonus',
     'sorts',
+    'de la même famille',
 }
 
 
@@ -123,9 +123,13 @@ class ScrapItem:
     def scrap_container(element: WebElement) -> Union[str, list[str], list[list[str]]]:
         def scrap_list(element: WebElement) -> list[str]:
             data = []
-            for e in element.find_elements(By.CLASS_NAME, ITEM_LIST_CLASS):
-                e = e.find_element(By.CLASS_NAME, ITEM_TITLE_CLASS)
+            for el in element.find_elements(By.CLASS_NAME, ITEM_LIST_CLASS):
+                e = el.find_element(By.CLASS_NAME, ITEM_TITLE_CLASS)
                 e = e.text if e.text != '' else e.get_attribute('textContent').strip()
+
+                if len(el.find_elements(By.CLASS_NAME, 'ak-text')) != 0:
+                    e += ' | ' + ' | '.join([t.text.strip() for t in el.find_elements(By.CLASS_NAME, 'ak-text')])
+
                 data.append(e)
             return data
 
