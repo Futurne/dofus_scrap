@@ -17,6 +17,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 from src.scrap.equipement import ScrapEquipement, ScrapArme
 from src.scrap.recette import ScrapRecette
+from src.encyclopedia_item import ScrapItem
 
 
 BASENAME_URLS = {
@@ -30,6 +31,7 @@ BASENAME_URLS = {
     'compagnons': 'https://www.dofus.com/fr/mmorpg/encyclopedie/compagnons',
     'idoles': 'https://www.dofus.com/fr/mmorpg/encyclopedie/idoles',
     'harnachements': 'https://www.dofus.com/fr/mmorpg/encyclopedie/harnachements',
+    'bestiaire': 'https://www.dofus.com/fr/mmorpg/encyclopedie/monstres',
 }  # category_name -> category_url
 
 TIMEOUT = 3
@@ -114,8 +116,6 @@ class EncyclopediaScrap:
         except NoSuchElementException:
             return False
 
-        raise RuntimeError
-
     def scrap_category(self, category_url: str):
         """Get all items in the category.
         This is a *long* process. There is timeout between each item to
@@ -130,17 +130,10 @@ class EncyclopediaScrap:
 
         # Load the existing df if possible
         if os.path.exists(filepath):
-            with open(filename, 'r') as json_file:
+            with open(filepath, 'r') as json_file:
                 data = json.load(json_file)
         else:
             data = list()
-
-        if category_name == 'armes':
-            scrap_class = ScrapArme
-        elif category_name == 'equipements':
-            scrap_class = ScrapEquipement
-        else:
-            raise RuntimeError(f'Category {category_name} is not supported yet!')
 
         # Load the existing encyclopedia state if possible
         state = defaultdict(int)
@@ -156,10 +149,9 @@ class EncyclopediaScrap:
                 if self.check_404(item_url):
                     continue
 
-                scrap_item = scrap_class(self.driver, item_url)
-                scrap_item.scrap()
-                item = scrap_item.to_item()
-                data.append(item.to_dict())
+                scrap_item = ScrapItem(self.driver, item_url)
+                scrap_item.scrap_page()
+                data.append(scrap_item.to_dict())
 
             # Save the data at the end of the page
             with open(filepath, 'w') as json_file:
