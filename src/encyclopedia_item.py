@@ -105,7 +105,11 @@ class ScrapItem:
             'illustration_url': self.illustration_url,
             'type': self.item_type,
             'niveau': self.item_level,
-            'containers': self.data,
+            'containers': {
+                category: value
+                for category, value in self.data.items
+                if value not in [[], '']
+            },
         }
 
     @staticmethod
