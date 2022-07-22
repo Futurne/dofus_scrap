@@ -143,9 +143,7 @@ class EncyclopediaScrap:
             url = EncyclopediaScrap.get_page_number(category_url, page_number)
             items = self.list_items(url)
             for item_url in tqdm(items):
-                time.sleep(TIMEOUT)
-                if self.check_404(item_url):
-                    continue
+                time.sleep(TIMEOUT)  # Avoid spamming the server
 
                 scrap_item = ScrapItem(self.driver, item_url)
                 scrap_item.scrap_page()

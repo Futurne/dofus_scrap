@@ -66,6 +66,15 @@ class ScrapItem:
             except NoSuchElementException:
                 continue
 
+    def check_404(self) -> bool:
+        """Is the page a 404 error page?
+        """
+        try:
+            self.driver.find_element(By.CLASS_NAME, 'ak-404')
+            return True
+        except NoSuchElementException:
+            return False
+
     def scrap_name(self):
         element = self.driver.find_element(By.CLASS_NAME, 'ak-title-container')
         element = element.find_element(By.TAG_NAME, 'h1')
@@ -88,6 +97,11 @@ class ScrapItem:
     
     def scrap_page(self):
         self.driver.get(self.url)
+        self.error_404 = self.check_404()
+
+        if self.error_404:
+            return
+
         self.update_all_forms()
 
         self.scrap_name()
@@ -101,6 +115,12 @@ class ScrapItem:
             self.data[category.lower()] = ScrapItem.scrap_container(element)
 
     def to_dict(self) -> dict:
+        if self.error_404:
+            return {
+                'url': self.url,
+                'erreur 404': self.error_404,
+            }
+
         data = {
             'nom': self.item_name,
             'url': self.url,
