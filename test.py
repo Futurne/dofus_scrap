@@ -5,12 +5,19 @@ import sqlite3
 from selenium import webdriver
 from pprint import pprint
 
-from src.scrap.item import ScrapItem
-from src.scrap.equipement import ScrapArme, ScrapEquipement
-from src.scrap.recette import ScrapRecette
 from src.encyclopedia_scrap import EncyclopediaScrap
+from src.encyclopedia_item import ScrapItem
+
 
 if __name__ == '__main__':
+    url = 'https://www.dofus.com/fr/mmorpg/encyclopedie/monstres/384-aboub'
+    url = 'https://www.dofus.com/fr/mmorpg/encyclopedie/panoplies/476-panoplie-servitude'
+    url = 'https://www.dofus.com/fr/mmorpg/encyclopedie/consommables/11504-pain-frostiz-souffle'
+    url = 'https://www.dofus.com/fr/mmorpg/encyclopedie/armes/19096-marteau-katrepat'
+    url = 'https://www.dofus.com/fr/mmorpg/encyclopedie/familiers/15978-blokus'
+    url = 'https://www.dofus.com/fr/mmorpg/encyclopedie/idoles/20-bihilete-majeure'
+    url = 'https://www.dofus.com/fr/mmorpg/encyclopedie/montures/20-dragodinde-amande'
+    url = 'https://www.dofus.com/fr/mmorpg/encyclopedie/monstres/47-abraknyde'
     scrap = EncyclopediaScrap()
     scrap.start()
 
@@ -24,13 +31,18 @@ if __name__ == '__main__':
     pprint(scrap.to_item().to_dict())
     """
 
-    url = 'https://www.dofus.com/fr/mmorpg/encyclopedie/armes/19096-marteau-katrepat'
+    """
     scrap = ScrapArme(scrap.driver, url)
     scrap.scrap()
     item = scrap.to_item()
     scrap = ScrapRecette(scrap.driver, url, item.name)
     scrap.scrap()
+    """
+    scrap = ScrapItem(scrap.driver, url)
+    scrap.scrap_page()
+    data = scrap.to_dict()
     scrap.driver.quit()
+    pprint(data)
 
     """
     con = sqlite3.connect('example.db')
