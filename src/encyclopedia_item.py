@@ -161,13 +161,17 @@ class ScrapItem:
         def scrap_list(element: WebElement) -> list[str]:
             data = []
             for el in element.find_elements(By.CLASS_NAME, ITEM_LIST_CLASS):
-                e = el.find_element(By.CLASS_NAME, ITEM_TITLE_CLASS)
-                e = e.text if e.text != '' else e.get_attribute('textContent').strip()
+                try:
+                    e = el.find_element(By.CLASS_NAME, ITEM_TITLE_CLASS)
+                    e = e.text if e.text != '' else e.get_attribute('textContent').strip()
 
-                if len(el.find_elements(By.CLASS_NAME, 'ak-text')) != 0:
-                    e += ' | ' + ' | '.join([t.text.strip() for t in el.find_elements(By.CLASS_NAME, 'ak-text')])
+                    if len(el.find_elements(By.CLASS_NAME, 'ak-text')) != 0:
+                        e += ' | ' + ' | '.join([t.text.strip() for t in el.find_elements(By.CLASS_NAME, 'ak-text')])
 
-                data.append(e)
+                    data.append(e)
+                except NoSuchElementException:
+                    continue  # Sometimes the item is not valid!
+
             return data
 
         if len(element.find_elements(By.CLASS_NAME, LIST_CLASS)) == 1:
