@@ -4,3 +4,4 @@ geckodriver.log
 *.db
 data
 *.swp
+.sav
