@@ -61,12 +61,13 @@ def list_all_container(name: str) -> set:
     return container
 
 
-def parse_all_effet():
+def parse_all_effet(name: str):
     for item in all_files():
-        if 'containers' in item and 'effets' in item['containers']:
+        if 'containers' in item and name in item['containers']:
             parser = JsonParser(None)
-            effets = item['containers']['effets']
-            parser.parse_effets('effets', effets)
+            effets = item['containers'][name]
+            parser.log_value(name, effets)
+            print(parser.parsed_data)
 
 
 if __name__ == '__main__':
@@ -77,8 +78,8 @@ if __name__ == '__main__':
     # p = list_all_primary('type')
     # pprint(p)
 
-    c = list_all_container('conditions')
-    pprint(c)
+    # c = list_all_container('de la même famille')
+    # pprint(c)
 
-    # parse_all_effet()
+    parse_all_effet('résistances')
 

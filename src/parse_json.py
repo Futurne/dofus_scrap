@@ -95,7 +95,7 @@ class JsonParser:
         else:
             self.parsed_data[name] = int(niveau)
 
-    def parse_effets(self, name: str, effets: list):
+    def parse_effets(self, name: str, effets: list[str]):
         self.parsed_data[name] = list()
         degats = []
         for effet in effets:
@@ -108,16 +108,70 @@ class JsonParser:
         if degats != []:
             self.parsed_data['dégâts'] = degats
 
+    def parse_croisements(self, name: str, croisements: str):
+        croisements = croisements.split('\n')
+        croisements = [
+            (croisements[i], croisements[i+1])
+            for i in range(0, len(croisements), 2)
+        ]
+        self.parsed_data[name] = croisements
+
+    def parse_bonus(self, name: str, bonus: list[str]):
+        exp, butin = bonus
+        self.parsed_data[name] = {
+                ' '.join(exp.split(' ')[:-1]): int(exp.split(' ')[-1]),
+                ' '.join(butin.split(' ')[:-1]): int(butin.split(' ')[-1]),
+        }
+
+    def parse_butins(self, name: str, butins: list[Union[list[str], str]]):
+        def parse(butins: Union[str, list[str]]) -> dict[str, float]:
+            if type(butins) is str:
+                name, drop = butins.split(' | ')
+                drop = drop.replace(' %', '')
+                if ' - ' not in drop:
+                    return {
+                        name: float(drop)
+                    }
+                else:
+                    min_drop, max_drop = drop.split(' - ')
+                    min_drop, max_drop = float(min_drop), float(max_drop)
+                    return {
+                        name: (min_drop, max_drop)
+                    }
+
+            butins = [b.split(' | ') for b in butins]
+            butins = {b[0]: b[1] for b in butins}
+            for name, drop in butins.items():
+                drop = drop.replace(' %', '')
+                if ' - ' not in drop:
+                    butins[name] = float(drop)
+                else:
+                    min_drop, max_drop = drop.split(' - ')
+                    min_drop, max_drop = float(min_drop), float(max_drop)
+                    butins[name] = (min_drop, max_drop)
+            return butins
+
+        if len(butins) == 2:
+            butins, butins_cond = butins
+            self.parsed_data['butins conditionnés'] = parse(butins_cond)
+
+        self.parsed_data[name] = parse(butins)
+
     def parse_containers(self, c_name: str, c_value: str):
         parsing_methods = {
             'description': self.log_value,
             'effets': self.parse_effets,
             'effets évolutifs': self.parse_effets,
-            'issu du croisement': 'Oui',
+            'issu du croisement': self.parse_croisements,
+            'bonus': self.parse_bonus,
+            'butins': self.parse_butins,
+            'butins conditionnés': lambda n, v: None,
+            'de la même famille': self.log_value,
+            "comment l'obtenir ?": self.log_value,
         }
 
         swap_name = {
-            s: 'issu du croisemenet'
+            s: 'issu du croisement'
             for s in [
                 'issu du croisement (1 croisement possible)',
                 'issu du croisement (10 croisements possibles)',
