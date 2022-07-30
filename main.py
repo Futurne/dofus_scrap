@@ -43,6 +43,7 @@ def test_on_examples():
         item.scrap_page()
         print(f'[{item.item_name}]:')
         pprint(item.to_dict())
+        print('\n', end='')
 
     scrap.driver.quit()
 

@@ -21,6 +21,8 @@ class ScrapAlmanax:
         }
 
     def scrap(self):
+        """Scrap a whole one-year calendar from the almanax webpage.
+        """
         day = datetime.date.fromisoformat('2022-01-01')
         delta_day = datetime.timedelta(days=1)
         date_format = '%Y-%m-%d'
@@ -39,6 +41,8 @@ class ScrapAlmanax:
             day += delta_day
 
     def to_csv(self, filename: str):
+        """Save the scrapped data to a csv file using pandas.
+        """
         df = pd.DataFrame(self.data)
         df.to_csv(filename, index=False)
 
