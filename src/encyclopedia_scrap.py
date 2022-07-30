@@ -30,6 +30,7 @@ BASENAME_URLS = {
     'idoles': 'https://www.dofus.com/fr/mmorpg/encyclopedie/idoles',
     'harnachements': 'https://www.dofus.com/fr/mmorpg/encyclopedie/harnachements',
     'bestiaire': 'https://www.dofus.com/fr/mmorpg/encyclopedie/monstres',
+    'panoplies': 'https://www.dofus.com/fr/mmorpg/encyclopedie/panoplies',
 }  # category_name -> category_url
 
 TIMEOUT = 3

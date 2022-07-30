@@ -168,6 +168,9 @@ class ScrapItem:
                     if len(el.find_elements(By.CLASS_NAME, 'ak-text')) != 0:
                         e += ' | ' + ' | '.join([t.text.strip() for t in el.find_elements(By.CLASS_NAME, 'ak-text')])
 
+                    if len(el.find_elements(By.CLASS_NAME, 'ak-front')) != 0:
+                        e += ' | ' + ' | '.join([t.text.strip() for t in el.find_elements(By.CLASS_NAME, 'ak-front')])
+
                     data.append(e)
                 except NoSuchElementException:
                     continue  # Sometimes the item is not valid!

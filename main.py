@@ -2,15 +2,53 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
+import time
 import argparse
+
+from pprint import pprint
 
 from src.almanax.almanax_scrap import ScrapAlmanax
 from src.encyclopedia_scrap import BASENAME_URLS, EncyclopediaScrap
+from src.encyclopedia_item import ScrapItem
+
+
+def test_on_examples():
+    scrap = EncyclopediaScrap()
+    scrap.start()
+
+    urls = [
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/armes/26011-faux-chaotique',
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/equipements/17581-collier-valet-veinard',
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/panoplies/344-panoplie-reine-voleurs',
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/monstres/2385-abrakadnuzar',
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/familiers/11966-blerodoudou',
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/montures/37-dragodinde-amande-ivoire',
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/consommables/11505-potion-torboyo',
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/ressources/13923-moustache-klime',
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/objets-d-apparat/23110-bandeau-yonkwa',
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/compagnons/22-andre-sage',
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/idoles/18-bihilete-mineure',
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/harnachements/17838-harnachement-dragodinde-pilote',
+    ]
+    for url in urls:
+        time.sleep(5)
+        item = ScrapItem(scrap.driver, url)
+        item.scrap_page()
+        pprint(item.to_dict())
+        print('\n')
+
+    scrap.driver.quit()
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Download Dofus datasets')
 
+    parser.add_argument(
+        '--test',
+        action='store_true',
+        help='Test the scrapper on a subset of pages and then quit'
+    )
     parser.add_argument(
         '--all',
         action='store_true',
@@ -21,7 +59,7 @@ if __name__ == '__main__':
         action='store_true',
         help='Download from the almanax website'
     )
-    for arg_name in BASENAME_URLS.keys():
+    for arg_name in sorted(BASENAME_URLS.keys()):
         parser.add_argument(
             f'--{arg_name}',
             action='store_true',
@@ -29,6 +67,10 @@ if __name__ == '__main__':
         )
 
     args = parser.parse_args()
+    if args.test:
+        test_on_examples()
+        sys.exit(os.EX_OK)
+
     if args.all:
         args.almanax = True
         for category in BASENAME_URLS.keys():
