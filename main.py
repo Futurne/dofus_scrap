@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Scrapping script.
+Entry point to all scrapping modules.
+"""
 
 import os
 import sys
@@ -8,12 +11,15 @@ import argparse
 
 from pprint import pprint
 
-from src.almanax.almanax_scrap import ScrapAlmanax
-from src.encyclopedia_scrap import BASENAME_URLS, EncyclopediaScrap
-from src.encyclopedia_item import ScrapItem
+from src.scrap.almanax_scrap import ScrapAlmanax
+from src.scrap.encyclopedia_scrap import BASENAME_URLS, EncyclopediaScrap
+from src.scrap.encyclopedia_item import ScrapItem
 
 
 def test_on_examples():
+    """Scrap some encyclopedia items to test
+    if the scrapping is properly done.
+    """
     scrap = EncyclopediaScrap()
     scrap.start()
 
@@ -35,8 +41,8 @@ def test_on_examples():
         time.sleep(5)
         item = ScrapItem(scrap.driver, url)
         item.scrap_page()
+        print(f'[{item.item_name}]:')
         pprint(item.to_dict())
-        print('\n')
 
     scrap.driver.quit()
 

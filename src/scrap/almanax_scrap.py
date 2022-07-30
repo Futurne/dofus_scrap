@@ -7,7 +7,7 @@ import datetime
 
 import pandas as pd
 
-from src.almanax.almanax_page import AlmanaxPage
+from src.scrap.almanax_page import AlmanaxPage
 
 
 class ScrapAlmanax:

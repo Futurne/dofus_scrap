@@ -15,7 +15,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 
-from src.encyclopedia_item import ScrapItem
+from src.scrap.encyclopedia_item import ScrapItem
 
 
 BASENAME_URLS = {
@@ -33,7 +33,7 @@ BASENAME_URLS = {
     'panoplies': 'https://www.dofus.com/fr/mmorpg/encyclopedie/panoplies',
 }  # category_name -> category_url
 
-TIMEOUT = 3
+TIMEOUT = 3  # To slow down our scrapping (else cloudfare is not happy)
 
 
 class EncyclopediaScrap:

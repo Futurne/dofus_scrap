@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Scrap info from an encyclopedia item webpage.
+"""
 from typing import Union
 
 from selenium import webdriver
@@ -17,6 +19,7 @@ ITEM_LIST_CLASS = 'ak-list-element'
 ITEM_TITLE_CLASS = 'ak-title'
 SELECT_CLASS = 'ak-select-container'
 
+# Define containers that you want to scrap
 VALID_CONTAINER_TITLES = {
     'description',
     'bonus de la panoplie',
@@ -37,12 +40,32 @@ VALID_CONTAINER_TITLES = {
 
 
 class ScrapItem:
+    """Detect and scrap all containers and basic information on the given URL.
+    Uses selenium to search the webpage.
+
+    Use `scrap_page` to collect everything.
+    Use `to_dict` to get a dictionary with all scrapped data.
+    """
     def __init__(self, driver: webdriver.Firefox, url: str):
+        """Create the scrapping object.
+
+        Parameters
+        ----------
+            driver: Selenium driver used to search the page.
+            url:    Item URL.
+        """
         self.driver = driver
         self.url = url
-        self.data = dict()
+        self.data = dict()  # Everything that is scrapped goes there
 
     def get_containers(self) -> dict[str, WebElement]:
+        """List all valid containers in the webpage.
+
+        Returns
+        -------
+            containers: Dictionary [container name -> container content].
+                The content is given as a `WebElement`.
+        """
         containers = dict()
 
         for element in self.driver.find_elements(By.CLASS_NAME, CONTAINER_CLASS):
@@ -55,6 +78,11 @@ class ScrapItem:
         return containers
 
     def update_all_forms(self):
+        """Select all forms in the webpage and set its value to the biggest value possible.
+
+        Useful when an item have multiple bonuses depending on its level for example.
+        We only scrap the bonus associated with its biggest level.
+        """
         total_forms = len(self.driver.find_elements(By.TAG_NAME, 'form'))
         for form_id in range(total_forms):
             form_element = self.driver.find_elements(By.TAG_NAME, 'form')[form_id]
@@ -96,6 +124,8 @@ class ScrapItem:
         self.item_level = element.text
     
     def scrap_page(self):
+        """Scrap everything in the item webpage.
+        """
         self.driver.get(self.url)
         self.error_404 = self.check_404()
 
@@ -115,6 +145,10 @@ class ScrapItem:
             self.data[category.lower()] = ScrapItem.scrap_container(element)
 
     def to_dict(self) -> dict:
+        """Returns a dictionary with all scrapped data.
+
+        This dictionary can then be saved into a json file for example.
+        """
         if self.error_404:
             return {
                 'url': self.url,
@@ -143,6 +177,12 @@ class ScrapItem:
 
     @staticmethod
     def valid_container(element: WebElement) -> bool:
+        """Check whether a container is valid or not.
+
+        A valid container needs to have a direct child being a TITLE_CLASS div
+        and a direct child being a CONTENT_CLASS div.
+        Its title needs to start like one of the given VALID_CONTAINER_TITLES.
+        """
         title_count, content_count = 0, 0
         for child in element.find_elements(By.XPATH, './*'):
             if TITLE_CLASS in child.get_attribute('class'):
@@ -158,6 +198,10 @@ class ScrapItem:
 
     @staticmethod
     def scrap_container(element: WebElement) -> Union[str, list[str], list[list[str]]]:
+        """Scrap the given container element.
+
+        It can be of two nature: a standard string content or a list of string contents.
+        """
         def scrap_list(element: WebElement) -> list[str]:
             data = []
             for el in element.find_elements(By.CLASS_NAME, ITEM_LIST_CLASS):
@@ -177,13 +221,13 @@ class ScrapItem:
 
             return data
 
-        if len(element.find_elements(By.CLASS_NAME, LIST_CLASS)) == 1:
+        if len(element.find_elements(By.CLASS_NAME, LIST_CLASS)) == 1:  # List of elements
             return scrap_list(element.find_element(By.CLASS_NAME, LIST_CLASS))
-        elif len(element.find_elements(By.CLASS_NAME, LIST_CLASS)) != 0:
+        elif len(element.find_elements(By.CLASS_NAME, LIST_CLASS)) != 0:  # Multiple lists of elements
             return [
                 scrap_list(element_list)
                 for element_list in element.find_elements(By.CLASS_NAME, LIST_CLASS)
             ]
-        else:
+        else:  # A simple string content
             return element.text
 
