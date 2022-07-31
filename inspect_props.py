@@ -5,7 +5,8 @@ import json
 
 from pprint import pprint
 
-from src.parse_json import JsonParser
+from src.preprocess.parse_json import JsonParser
+from src.preprocess.preprocess import preprocess_strings, rename_containers
 
 
 files = [
@@ -70,6 +71,13 @@ def parse_all_effet(name: str):
             print(parser.parsed_data)
 
 
+def preprocess_all():
+    for item in all_files():
+        item = preprocess_strings(item)
+        item = rename_containers(item)
+        pprint(item)
+
+
 if __name__ == '__main__':
     names = list_containers_name()
     print('Containers types:')
@@ -81,5 +89,6 @@ if __name__ == '__main__':
     # c = list_all_container('de la même famille')
     # pprint(c)
 
-    parse_all_effet('résistances')
+    # parse_all_effet('recette')
 
+    preprocess_all()
