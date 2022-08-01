@@ -183,31 +183,12 @@ class JsonParser:
             'issu du croisement': self.parse_croisements,
             'bonus': self.parse_bonus,
             'butins': self.parse_butins,
-            'butins conditionnés': lambda n, v: None,
             'de la même famille': self.log_value,
-            "comment l'obtenir ?": self.log_value,
             'résistances': self.parse_resistances,
             'sorts': self.log_value,
         }
 
-        swap_name = {
-            s: 'issu du croisement'
-            for s in [
-                'issu du croisement (1 croisement possible)',
-                'issu du croisement (10 croisements possibles)',
-                'issu du croisement (3 croisements possibles)',
-                'issu du croisement (4 croisements possibles)',
-                'issu du croisement (5 croisements possibles)',
-                'issu du croisement (7 croisements possibles)',
-                'issu du croisement (8 croisements possibles)',
-                'issu du croisement (9 croisements possibles)',
-            ]
-        }
-
         for name, value in c_value.items():
-            if name in swap_name:
-                name = swap_name[name]
-
             parsing_methods[name](name, value)
 
     def parse(self) -> dict[str, Any]:
