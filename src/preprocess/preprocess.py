@@ -36,8 +36,8 @@ def rename_containers(item: dict[str, Any]) -> dict[str, Any]:
 
 
 def preprocess_strings(
-        item: Union[str, list[Any], dict[str, Any]]
-) -> Union[str, list[Any], dict[str, Any]]:
+        item: Union[str, list[Any], dict[str, Any], Any]
+) -> Union[str, list[Any], dict[str, Any], Any]:
     """Correct some values.
     """
     match item:
@@ -59,4 +59,15 @@ def preprocess_item(item: dict[str, Any]) -> dict[str, Any]:
     item = preprocess_strings(item)
     item = rename_containers(item)
     return item
+
+
+def remove_containers(item: dict[str, Any], to_remove: set[str]):
+    """Remove unwanted containers from the item if it has them.
+    """
+    if 'containers' not in item:
+        return None
+
+    for c_name in to_remove:
+        if c_name in item['containers']:
+            del item['containers'][c_name]
 

@@ -125,7 +125,7 @@ class EncyclopediaScrap:
         """
         max_page_number = self.total_pages(category_url)
         category_name = self.category_name(category_url).lower()
-        filepath = f'data/{category_name}.json'
+        filepath = f'data_raw/{category_name}.json'
 
         # Load the existing df if possible
         if os.path.exists(filepath):
@@ -136,8 +136,8 @@ class EncyclopediaScrap:
 
         # Load the existing encyclopedia state if possible
         state = defaultdict(int)
-        if os.path.exists('data/encyclopedia_state.yaml'):
-            with open('data/encyclopedia_state.yaml') as state_file:
+        if os.path.exists('data_raw/encyclopedia_state.yaml'):
+            with open('data_raw/encyclopedia_state.yaml') as state_file:
                 state |= yaml.safe_load(state_file)  # Get the dictionnary and make it a defaultdict (thanks to the |= operator)
 
         for page_number in tqdm(range(state[category_name] + 1, max_page_number + 1)):

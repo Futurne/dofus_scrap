@@ -83,8 +83,8 @@ if __name__ == '__main__':
             args.__dict__[category] = True
 
     # Create the 'data' directory if necessary
-    if not os.path.isdir('data'):
-        os.makedirs('data')
+    if not os.path.isdir('data_raw'):
+        os.makedirs('data_raw')
 
     if args.almanax:
         almanax = ScrapAlmanax()
