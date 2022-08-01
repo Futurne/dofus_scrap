@@ -1,7 +1,8 @@
-**/__pycache__/
+data
+data_raw
 geckodriver.log
+**/__pycache__/
 *.bkp
 *.db
-data
 *.swp
 .sav

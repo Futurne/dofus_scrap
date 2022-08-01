@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import json
-
 from pprint import pprint
 
-from src.parse_json import JsonParser
+from src.preprocess.parse_json import JsonParser
+from src.preprocess.preprocess import preprocess_strings, rename_containers
 
 
 files = [
@@ -23,17 +23,18 @@ files = [
 ]
 
 
-def all_files():
+def all_files(filename: str = None):
     for f in files:
-        with open(f'data/{f}', 'r') as json_file:
-            data = json.load(json_file)
-            for item in data:
-                yield item
+        if filename is not None and f == filename:
+            with open(f'data/{f}', 'r') as json_file:
+                data = json.load(json_file)
+                for item in data:
+                    yield item
 
 
 def list_containers_name() -> set[str]:
     names = set()
-    for item in all_files():
+    for item in all_files('ressources.json'):
         if 'containers' in item:
             names |= {c for c in item['containers']}
 
@@ -52,7 +53,7 @@ def list_all_primary(name: str) -> set:
 
 def list_all_container(name: str) -> set:
     container = set()
-    for item in all_files():
+    for item in all_files('ressources.json'):
         if 'containers' in item and name in item['containers']:
             if type(item['containers'][name]) is list:
                 container.add(frozenset(item['containers'][name]))
@@ -70,6 +71,13 @@ def parse_all_effet(name: str):
             print(parser.parsed_data)
 
 
+def preprocess_all():
+    for item in all_files():
+        item = preprocess_strings(item)
+        item = rename_containers(item)
+        pprint(item)
+
+
 if __name__ == '__main__':
     names = list_containers_name()
     print('Containers types:')
@@ -78,8 +86,10 @@ if __name__ == '__main__':
     # p = list_all_primary('type')
     # pprint(p)
 
-    # c = list_all_container('de la même famille')
-    # pprint(c)
+    c = list_all_container('conditions')
+    pprint(c)
 
-    parse_all_effet('résistances')
+    # parse_all_effet('sorts')
+
+    # preprocess_all()
 

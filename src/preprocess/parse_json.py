@@ -151,11 +151,29 @@ class JsonParser:
                     butins[name] = (min_drop, max_drop)
             return butins
 
+
         if len(butins) == 2:
             butins, butins_cond = butins
             self.parsed_data['butins conditionnés'] = parse(butins_cond)
 
         self.parsed_data[name] = parse(butins)
+
+    def parse_resistances(self, name: str, resistances: list[str]):
+        resistances = [r.split(' : ') for r in resistances]
+        range_regex = r'De\s(-?\d+)%\sà\s(-?\d+)%'
+        parsed = []
+        for element, values in resistances:
+            range_match = re.search(range_regex, values)
+            if range_match:
+                min_res, max_res = range_match.groups()
+                min_res, max_res = int(min_res), int(max_res)
+                parsed.append({element: (min_res, max_res)})
+            else:
+                res = int(values.replace('%', ''))
+                parsed.append({element: res})
+
+        self.parsed_data[name] = parsed
+
 
     def parse_containers(self, c_name: str, c_value: str):
         parsing_methods = {
@@ -165,29 +183,12 @@ class JsonParser:
             'issu du croisement': self.parse_croisements,
             'bonus': self.parse_bonus,
             'butins': self.parse_butins,
-            'butins conditionnés': lambda n, v: None,
             'de la même famille': self.log_value,
-            "comment l'obtenir ?": self.log_value,
-        }
-
-        swap_name = {
-            s: 'issu du croisement'
-            for s in [
-                'issu du croisement (1 croisement possible)',
-                'issu du croisement (10 croisements possibles)',
-                'issu du croisement (3 croisements possibles)',
-                'issu du croisement (4 croisements possibles)',
-                'issu du croisement (5 croisements possibles)',
-                'issu du croisement (7 croisements possibles)',
-                'issu du croisement (8 croisements possibles)',
-                'issu du croisement (9 croisements possibles)',
-            ]
+            'résistances': self.parse_resistances,
+            'sorts': self.log_value,
         }
 
         for name, value in c_value.items():
-            if name in swap_name:
-                name = swap_name[name]
-
             parsing_methods[name](name, value)
 
     def parse(self) -> dict[str, Any]:
