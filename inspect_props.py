@@ -18,6 +18,7 @@ files = [
     'idoles.json',
     'montures.json',
     "objets d'apparat.json",
+    'panoplies.json',
     'ressources.json',
     'équipements.json',
 ]
@@ -25,7 +26,7 @@ files = [
 
 def all_files(filename: str = None):
     for f in files:
-        if filename is not None and f == filename:
+        if filename is None or f == filename:
             with open(f'data/{f}', 'r') as json_file:
                 data = json.load(json_file)
                 for item in data:
@@ -34,7 +35,7 @@ def all_files(filename: str = None):
 
 def list_containers_name() -> set[str]:
     names = set()
-    for item in all_files('ressources.json'):
+    for item in all_files():
         if 'containers' in item:
             names |= {c for c in item['containers']}
 
@@ -53,7 +54,7 @@ def list_all_primary(name: str) -> set:
 
 def list_all_container(name: str) -> set:
     container = set()
-    for item in all_files('ressources.json'):
+    for item in all_files():
         if 'containers' in item and name in item['containers']:
             if type(item['containers'][name]) is list:
                 container.add(frozenset(item['containers'][name]))
@@ -67,8 +68,8 @@ def parse_all_effet(name: str):
         if 'containers' in item and name in item['containers']:
             parser = JsonParser(None)
             effets = item['containers'][name]
-            parser.log_value(name, effets)
-            print(parser.parsed_data)
+            parser.parse_conditions(name, effets)
+            # print(parser.parsed_data)
 
 
 def preprocess_all():
@@ -86,10 +87,10 @@ if __name__ == '__main__':
     # p = list_all_primary('type')
     # pprint(p)
 
-    c = list_all_container('conditions')
-    pprint(c)
+    # c = list_all_container('butins')
+    # pprint(c)
 
-    # parse_all_effet('sorts')
+    parse_all_effet('conditions')
 
     # preprocess_all()
 

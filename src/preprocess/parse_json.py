@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+from pprint import pprint
 from typing import Any, Union
 
 
@@ -174,6 +175,14 @@ class JsonParser:
 
         self.parsed_data[name] = parsed
 
+    def parse_conditions(self, name: str, conditions: list[str]):
+        conditions = conditions[0]
+        conditions = conditions.replace('\n', ' ')
+        conditions = conditions.replace('(s)', '~')
+        groups = JsonParser.group_par(conditions)[0]
+        if len(groups) != 1:
+            pprint(groups)
+        JsonParser.parse_conditions_recursively(groups)
 
     def parse_containers(self, c_name: str, c_value: str):
         parsing_methods = {
@@ -183,7 +192,6 @@ class JsonParser:
             'issu du croisement': self.parse_croisements,
             'bonus': self.parse_bonus,
             'butins': self.parse_butins,
-            'de la même famille': self.log_value,
             'résistances': self.parse_resistances,
             'sorts': self.log_value,
         }
@@ -247,4 +255,75 @@ class JsonParser:
                 'vol': dmg_type == 'vol',
             }
         }
+
+    @staticmethod
+    def parse_conditions_recursively(
+            conditions: Union[str, dict[Any]]
+    ) -> Union[str, dict[Any]]:
+        match conditions:
+            case str() as conditions:
+                standard_cond = r'.+\s(<|>)\s\d+'
+                match_std = re.search(standard_cond, conditions)
+
+                if not match_std:
+                    return {'special': conditions}
+                
+                bool_op = match_std.group(1)
+                left_cond, right_cond = conditions.split(f' {bool_op} ')
+                return {
+                    bool_op: (left_cond, int(right_cond))
+                }
+            case dict() as conditions:
+                return {
+                    b: JsonParser.parse_conditions_recursively(c)
+                    for b, c in conditions.items()
+                }
+
+    @staticmethod
+    def group_par(my_string: str) -> tuple[list[Any], int]:
+        """Parse the string to group together characters that are between parenthesis.
+        """
+        def add_str(groups: list, current_str: str):
+            current_str = current_str.strip()
+            bool_regex = r'((^b\s)|(\sb$)|(\sb\s))'
+            for bool_op in ['et', 'ou']:
+                r = bool_regex.replace('b', bool_op)
+                match_bool = re.search(r, current_str)
+                if match_bool:
+                    current_str = f' {current_str} '
+                    conds = [s.strip() for s in current_str.split(f' {bool_op} ')]
+                    conds = [s for s in conds if s != '']
+                    groups.append({
+                        bool_op: conds
+                    })
+                    return
+
+            if current_str != '':
+                groups.append(current_str)
+
+        groups = []
+        i = 0
+        current_str = ''
+        while i < len(my_string):
+            c = my_string[i]
+
+            match c:
+                case '(':
+                    add_str(groups, current_str)
+                    current_str = ''
+
+                    new_groups, last_i = JsonParser.group_par(my_string[i+1:])
+                    groups.append(new_groups)
+                    i += last_i
+                case ')':
+                    add_str(groups, current_str)
+                    i += 1
+                    break
+                case _:
+                    current_str += c
+
+            i += 1
+
+        add_str(groups, current_str)
+        return groups, i
 

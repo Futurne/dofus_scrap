@@ -38,7 +38,7 @@ def test_on_examples():
         'https://www.dofus.com/fr/mmorpg/encyclopedie/harnachements/17838-harnachement-dragodinde-pilote',
     ]
     for url in urls:
-        time.sleep(5)
+        time.sleep(0)
         item = ScrapItem(scrap.driver, url)
         item.scrap_page()
         print(f'[{item.item_name}]:')

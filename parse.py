@@ -23,6 +23,7 @@ to_remove = {
     'idoles.json': [],
     'montures.json': ["comment l'obtenir ?"],
     "objets d'apparat.json": ['effets', 'caractéristiques'],
+    'panoplies.json': ['bonus total de la panoplie complète'],
     'ressources.json': [],
 }  # Filename -> containers to remove
 
