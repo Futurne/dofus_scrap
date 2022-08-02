@@ -69,7 +69,7 @@ def parse_all_effet(name: str):
             parser = JsonParser(None)
             effets = item['containers'][name]
             parser.parse_conditions(name, effets)
-            # print(parser.parsed_data)
+            print(parser.parsed_data)
 
 
 def preprocess_all():

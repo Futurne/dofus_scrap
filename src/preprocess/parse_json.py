@@ -3,7 +3,7 @@
 
 import re
 from pprint import pprint
-from typing import Any, Union
+from typing import Any, Union, Optional
 
 
 ELEMENTS = {
@@ -177,12 +177,11 @@ class JsonParser:
 
     def parse_conditions(self, name: str, conditions: list[str]):
         conditions = conditions[0]
-        conditions = conditions.replace('\n', ' ')
-        conditions = conditions.replace('(s)', '~')
-        groups = JsonParser.group_par(conditions)[0]
-        if len(groups) != 1:
-            pprint(groups)
-        JsonParser.parse_conditions_recursively(groups)
+        conditions = JsonParser.group_par(conditions)
+        conditions = JsonParser.parse_multiple_conds(conditions)
+        conditions = JsonParser.parse_conditions_recursively(conditions)
+        if conditions is not None:
+            self.parsed_data[name] = conditions
 
     def parse_containers(self, c_name: str, c_value: str):
         parsing_methods = {
@@ -256,15 +255,15 @@ class JsonParser:
             }
         }
 
+    ###### - Static methods for conditions parsing - #####
     @staticmethod
     def parse_conditions_recursively(
-            conditions: Union[str, dict[Any]]
-    ) -> Union[str, dict[Any]]:
+            conditions: Union[str, dict[Any], list[Any]]
+    ) -> Union[str, dict[Any], list[Any]]:
         match conditions:
-            case str() as conditions:
+            case str():
                 standard_cond = r'.+\s(<|>)\s\d+'
                 match_std = re.search(standard_cond, conditions)
-
                 if not match_std:
                     return {'special': conditions}
                 
@@ -273,57 +272,111 @@ class JsonParser:
                 return {
                     bool_op: (left_cond, int(right_cond))
                 }
-            case dict() as conditions:
+            case dict():
                 return {
                     b: JsonParser.parse_conditions_recursively(c)
                     for b, c in conditions.items()
                 }
+            case list():
+                return [
+                    JsonParser.parse_conditions_recursively(c)
+                    for c in conditions
+                ]
+            case None:
+                return None
+            case _:
+                raise RuntimeError(conditions)
 
     @staticmethod
-    def group_par(my_string: str) -> tuple[list[Any], int]:
+    def parse_multiple_conds(
+        conditions: list[Any]
+    ) -> Optional[dict[Optional[str], list]]:
+        """Parse the 'et' and 'ou' conditions.
+        """
+        def parse_multiple_conds_recursive(
+            conditions: list[Any]
+        ) -> tuple[list[Any], Optional[str]]:
+            """Recursively goes through all elements of the conditions
+            and determines the boolean operations of the multiple conditions
+            if there are any.
+
+            Add the multiple conditions in dictionnaries such that bool_op -> list_of_conds.
+            """
+            bool_op = None
+            parsed = []
+            for idx, cond in enumerate(conditions):
+                match cond:
+                    case str():
+                        multi_cond = r'\s(ou|et)\s'
+                        cond = f' {cond} '
+                        match_multi = re.search(multi_cond, cond)
+                        if match_multi:
+                            bool_op = match_multi.group(1)
+                            conds = cond.split(f' {bool_op} ')
+                            conds = [c.strip() for c in conds if c.strip() != '']
+                            parsed.extend(conds)
+                        else:
+                            parsed.append(cond.strip())
+                    case list():
+                        sub_conds, sub_bool_op = parse_multiple_conds_recursive(cond)
+                        if sub_conds != []:
+                            if len(sub_conds) == 1:  # No boolean ops needed
+                                sub_bool_op = None
+
+                            parsed.append({
+                                sub_bool_op: sub_conds
+                            })
+
+            return parsed, bool_op
+
+        conds, bool_op = parse_multiple_conds_recursive(conditions)
+        if conds != []:
+            if len(conds) == 1:  # No boolean ops needed
+                bool_op = None
+            return {bool_op: conds}
+
+        return None
+
+    @staticmethod
+    def group_par(my_string: str) -> list[Any]:
         """Parse the string to group together characters that are between parenthesis.
         """
         def add_str(groups: list, current_str: str):
             current_str = current_str.strip()
-            bool_regex = r'((^b\s)|(\sb$)|(\sb\s))'
-            for bool_op in ['et', 'ou']:
-                r = bool_regex.replace('b', bool_op)
-                match_bool = re.search(r, current_str)
-                if match_bool:
-                    current_str = f' {current_str} '
-                    conds = [s.strip() for s in current_str.split(f' {bool_op} ')]
-                    conds = [s for s in conds if s != '']
-                    groups.append({
-                        bool_op: conds
-                    })
-                    return
-
             if current_str != '':
+                current_str = current_str.replace('~', '(s)')
                 groups.append(current_str)
 
-        groups = []
-        i = 0
-        current_str = ''
-        while i < len(my_string):
-            c = my_string[i]
+        def group_par_recursive(my_string: str) -> tuple[list[Any], int]:
+            groups = []
+            i = 0
+            current_str = ''
+            while i < len(my_string):
+                c = my_string[i]
 
-            match c:
-                case '(':
-                    add_str(groups, current_str)
-                    current_str = ''
+                match c:
+                    case '(':
+                        add_str(groups, current_str)
+                        current_str = ''
 
-                    new_groups, last_i = JsonParser.group_par(my_string[i+1:])
-                    groups.append(new_groups)
-                    i += last_i
-                case ')':
-                    add_str(groups, current_str)
-                    i += 1
-                    break
-                case _:
-                    current_str += c
+                        new_groups, last_i = group_par_recursive(my_string[i+1:])
+                        groups.append(new_groups)
+                        i += last_i
+                    case ')':
+                        add_str(groups, current_str)
+                        current_str = ''
+                        i += 1
+                        break
+                    case _:
+                        current_str += c
 
-            i += 1
+                i += 1
 
-        add_str(groups, current_str)
-        return groups, i
+            add_str(groups, current_str)
+            return groups, i
+
+        my_string = my_string.replace('\n', ' ')
+        my_string = my_string.replace('(s)', '~')
+        my_string, _ = group_par_recursive(my_string)
+        return my_string
 
