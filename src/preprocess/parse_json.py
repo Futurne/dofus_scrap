@@ -91,8 +91,8 @@ class JsonParser:
     def parse_niveau(self, name: str, value: str):
         niveau = value.split(' : ')[1]
         if 'à' in niveau:
-            niveaux = niveau.split(' à ')
-            niveaux = [int(n) for n in niveaux]
+            min_niv, max_niv = niveau.split(' à ')
+            self.parsed_data[name] = (int(min_niv), int(max_niv))
         else:
             self.parsed_data[name] = int(niveau)
 
@@ -153,7 +153,7 @@ class JsonParser:
             return butins
 
 
-        if len(butins) == 2:
+        if type(butins[0]) is list:
             butins, butins_cond = butins
             self.parsed_data['butins conditionnés'] = parse(butins_cond)
 
