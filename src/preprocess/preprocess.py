@@ -41,11 +41,11 @@ def preprocess_strings(
     """Correct some values.
     """
     match item:
-        case str() as item:
+        case str():
             item = item.replace(r'{~ps}{~zs}', '(s)')
-        case list() as item:
+        case list():
             item = [preprocess_strings(s) for s in item]
-        case dict() as item:
+        case dict():
             item = {c: preprocess_strings(v) for c, v in item.items()}
         case _:
             pass
