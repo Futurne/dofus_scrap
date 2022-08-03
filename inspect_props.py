@@ -68,8 +68,9 @@ def parse_all_effet(name: str):
         if 'containers' in item and name in item['containers']:
             parser = JsonParser(None)
             effets = item['containers'][name]
-            parser.parse_conditions(name, effets)
-            print(parser.parsed_data)
+            print(effets)
+            parser.log_value(name, effets)
+            # print(parser.parsed_data)
 
 
 def preprocess_all():
@@ -84,13 +85,13 @@ if __name__ == '__main__':
     print('Containers types:')
     pprint(names)
 
-    # p = list_all_primary('type')
+    # p = list_all_primary('niveau')
     # pprint(p)
 
     # c = list_all_container('butins')
     # pprint(c)
 
-    parse_all_effet('conditions')
+    # parse_all_effet('de la même famille')
 
     # preprocess_all()
 

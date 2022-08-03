@@ -132,6 +132,55 @@ def test_croisements_parsing(to_parse: str, result: dict):
     parser.parse_croisements('issu du croisement', to_parse)
     assert parser.parsed_data == result
 
+
+@pytest.mark.parametrize(
+    'to_parse, result',
+    [
+        (
+            'Amulette du Piou\nAmulette\nNiv 11',
+            {'composition': [
+                'Amulette du Piou',
+            ]}
+        ),
+        (
+            'Amulette du Piou\nAmulette\nNiv 11 Voir la recette\nAnneau du Piou Rouge\nAnneau\nNiv 12',
+            {'composition': [
+                'Amulette du Piou',
+                'Anneau du Piou Rouge',
+            ]}
+        ),
+    ]
+)
+def test_croisements_parsing(to_parse: str, result: dict):
+    parser = JsonParser(None)
+    parser.parse_composition_pano('composition', to_parse)
+    assert parser.parsed_data == result
+
+
+@pytest.mark.parametrize(
+    'to_parse, result',
+    [
+        (
+            ['Attitude Aura du Touitcheur'],
+            {'bonus de la panoplie': [
+                [{'special': 'Attitude Aura du Touitcheur'},],
+            ]}
+        ),
+        (
+            [['2 Vitalité', '2 Initiative'], ['3 Vitalité', '3 Initiative', '3 Agilité']],
+            {'bonus de la panoplie': [
+                [{'Vitalité': 2}, {'Initiative': 2}],
+                [{'Vitalité': 3}, {'Initiative': 3}, {'Agilité': 3}],
+            ]}
+        ),
+    ]
+)
+def test_bonus_pano_parsing(to_parse: list[Union[str, list[str]]], result: dict):
+    parser = JsonParser(None)
+    parser.parse_bonus_pano('bonus de la panoplie', to_parse)
+    assert parser.parsed_data == result
+
+
 @pytest.mark.parametrize(
     'effets, result',
     [

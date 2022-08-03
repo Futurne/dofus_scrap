@@ -183,14 +183,43 @@ class JsonParser:
         if conditions is not None:
             self.parsed_data[name] = conditions
 
+    def parse_composition_pano(self, name: str, composition: str):
+        composition = composition.split('\n')
+        filtered_compo = list()
+        just_added = False
+        for c in composition:
+            if c.startswith('Niv '):
+                just_added = False
+            elif not just_added:
+                filtered_compo.append(c.strip())
+                just_added = True
+        self.parsed_data[name] = filtered_compo
+
+    def parse_bonus_pano(self, name: str, bonus_pano: list[Union[str, list[str]]]):
+        if type(bonus_pano[0]) is str:
+            bonus_pano = [bonus_pano,]
+
+        self.parsed_data[name] = [
+            [
+                JsonParser.parse_effet(effet)
+                for effet in bonus
+            ]
+            for bonus in bonus_pano
+        ]
+
     def parse_containers(self, c_name: str, c_value: str):
         parsing_methods = {
+            'bonus': self.parse_bonus,
+            'bonus de la panoplie': self.parse_bonus_pano,
+            'butins': self.parse_butins,
+            'caractéristiques': None,
+            'composition': self.parse_composition_pano,
+            'de la même famille': self.log_value,
             'description': self.log_value,
             'effets': self.parse_effets,
             'effets évolutifs': self.parse_effets,
             'issu du croisement': self.parse_croisements,
-            'bonus': self.parse_bonus,
-            'butins': self.parse_butins,
+            'recette': None,
             'résistances': self.parse_resistances,
             'sorts': self.log_value,
         }
