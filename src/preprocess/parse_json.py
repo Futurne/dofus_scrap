@@ -159,6 +159,13 @@ class JsonParser:
 
         self.parsed_data[name] = parse(butins)
 
+    def parse_recette(self, name: str, recette: list[str]):
+        self.parsed_data[name] = dict()
+        for item in recette:
+            item_name, item_type, multiplicity = item.split(' | ')
+            multiplicity = int(multiplicity[:-2])
+            self.parsed_data[name][item_name] = multiplicity
+
     def parse_resistances(self, name: str, resistances: list[str]):
         resistances = [r.split(' : ') for r in resistances]
         range_regex = r'De\s(-?\d+)%\sà\s(-?\d+)%'
@@ -207,6 +214,52 @@ class JsonParser:
             for bonus in bonus_pano
         ]
 
+    def parse_caracteristiques(self, name: str, caracs: list[str]):
+        self.parsed_data[name] = dict()
+
+        # Regex definitions
+        number_regex = r'(-?\d+)%?'
+        multiple_numbers_regex = f"^({number_regex}|De\\s{number_regex}\\sà\\s{number_regex}|{number_regex}\\sà\\s{number_regex})$"
+        PA_regex = number_regex + r'\s\((\d)+\sutilisations?\spar\stour\)'
+        CC_regex = f'{number_regex}/{number_regex}' + r'(\s\(\+(\d+)\))?'
+
+        for c in caracs:
+            key, value = c.split(' : ')
+
+            if value in ['Non', 'Oui']:  # Boolean value
+                value = value == 'Oui'  # To boolean value
+                self.parsed_data[name][key] = value
+                continue
+
+            match_numbers = re.search(multiple_numbers_regex, value)
+            if match_numbers:
+                groups = match_numbers.groups()
+                numbers = [int(n) for n in groups[1:] if n is not None]
+                if len(numbers) == 1:
+                    self.parsed_data[name][key] = numbers[0]
+                else:
+                    self.parsed_data[name][key] = tuple(numbers)
+                continue
+
+            match_PA = re.search(PA_regex, value)
+            if match_PA:
+                cost = match_PA.group(1)
+                uses = match_PA.group(2)
+                self.parsed_data[name][key] = int(cost)
+                self.parsed_data[name]['utilisations'] = int(uses)
+                continue
+
+            match_CC = re.search(CC_regex, value)
+            if match_CC:
+                num, denom = match_CC.group(1), match_CC.group(2)
+                num, denom = int(num), int(denom)
+                frac = 0 if denom == 0 else num / denom
+                self.parsed_data[name][key] = frac
+
+                cc_bonus = match_CC.group(4)
+                if cc_bonus is not None:
+                    self.parsed_data[name]['CC bonus'] = int(cc_bonus)
+
     def parse_containers(self, c_name: str, c_value: str):
         parsing_methods = {
             'bonus': self.parse_bonus,
@@ -219,7 +272,7 @@ class JsonParser:
             'effets': self.parse_effets,
             'effets évolutifs': self.parse_effets,
             'issu du croisement': self.parse_croisements,
-            'recette': None,
+            'recette': self.parse_recette,
             'résistances': self.parse_resistances,
             'sorts': self.log_value,
         }

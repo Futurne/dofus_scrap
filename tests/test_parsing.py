@@ -109,6 +109,25 @@ def test_butins_parsing(to_parse: list[Union[str, list[str]]], result: dict):
     parser.parse_butins('butins', to_parse)
     assert parser.parsed_data == result
 
+
+@pytest.mark.parametrize(
+    'to_parse, result',
+    [
+        (
+            ['Some item | Item category | 2 x', 'Some other item | Item category | 13 x'],
+            {'recette': {
+                'Some item': 2,
+                'Some other item': 13,
+            }}
+        ),
+    ]
+)
+def test_recette_parsing(to_parse: list[str], result: dict):
+    parser = JsonParser(None)
+    parser.parse_recette('recette', to_parse)
+    assert parser.parsed_data == result
+
+
 @pytest.mark.parametrize(
     'to_parse, result',
     [
@@ -154,6 +173,54 @@ def test_croisements_parsing(to_parse: str, result: dict):
 def test_croisements_parsing(to_parse: str, result: dict):
     parser = JsonParser(None)
     parser.parse_composition_pano('composition', to_parse)
+    assert parser.parsed_data == result
+
+
+@pytest.mark.parametrize(
+    'to_parse, result',
+    [
+        (
+            ['Génération : 1', 'Nombre de pods : 600', "Taux d'apprentissage : 20%", 'Capturable : Non', 'Test : Oui'],
+            {'caractéristiques': {
+                'Génération': 1,
+                'Nombre de pods': 600,
+                "Taux d'apprentissage": 20,
+                'Capturable': False,
+                'Test': True,
+            }}
+        ),  # Montures
+        (
+            ['PV : De 4700 à 8000', 'PA : 1', 'PM : -3'],
+            {'caractéristiques': {
+                'PV': (4700, 8000),
+                'PA': 1,
+                'PM': -3,
+            }}
+        ),  # Monstres
+        (
+            ['PA : 4 (1 utilisation par tour)', 'Portée : 1', 'CC : 1/30 (+15)'],
+            {'caractéristiques': {
+                'PA': 4,
+                'utilisations': 1,
+                'Portée': 1,
+                'CC': 1/30,
+                'CC bonus': 15,
+            }}
+        ),  # Armes
+        (
+            ['PA : 4 (2 utilisations par tour)', 'Portée : 2 à 4', 'CC : 1/0'],
+            {'caractéristiques': {
+                'PA': 4,
+                'utilisations': 2,
+                'Portée': (2, 4),
+                'CC': 0,
+            }}
+        ),  # Armes
+    ]
+)
+def test_caracteristiques_parsing(to_parse: str, result: dict):
+    parser = JsonParser(None)
+    parser.parse_caracteristiques('caractéristiques', to_parse)
     assert parser.parsed_data == result
 
 
