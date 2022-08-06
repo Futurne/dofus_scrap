@@ -52,7 +52,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--parse',
         action='store_true',
-        help='Parse the raw data, store the new data into a \'data\' folder'
+        help='Parse the prepared raw data, store the new data into a \'data\' folder'
     )
 
     args = parser.parse_args()

@@ -91,7 +91,7 @@ if __name__ == '__main__':
     # c = list_all_container('butins')
     # pprint(c)
 
-    # parse_all_effet('de la même famille')
+    parse_all_effet('caractéristiques')
 
     # preprocess_all()
 
