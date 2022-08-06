@@ -8,6 +8,8 @@ import os
 import json
 import argparse
 
+from tqdm import tqdm
+
 from src.preprocess.preprocess import preprocess_item, remove_containers
 from src.preprocess.parse_json import JsonParser
 
@@ -29,7 +31,8 @@ to_remove = {
 
 
 def prepare():
-    for filename in to_remove:
+    print('Preprocess data before parsing...')
+    for filename in tqdm(to_remove):
         prepared = []
         with open(f'data_raw/{filename}', 'r') as json_file:
             data = json.load(json_file)
@@ -40,6 +43,25 @@ def prepare():
 
         with open(f'data/{filename}', 'w') as json_file:
             json.dump(prepared, json_file, ensure_ascii=False)
+
+
+def parse_all():
+    print('Parse all data...')
+    parser = JsonParser()
+    for filename in tqdm(os.listdir('./data/')):
+        if not filename.endswith('.json'):
+            continue
+
+        with open(f'data/{filename}', 'r') as json_file:
+            data = json.load(json_file)
+
+        parsed_data = [
+            parser.parse(i)
+            for i in data
+        ]
+
+        with open(f'data/{filename}','w') as json_file:
+            json.dump(parsed_data, json_file, ensure_ascii=False)
 
 
 if __name__ == '__main__':
@@ -54,14 +76,21 @@ if __name__ == '__main__':
         action='store_true',
         help='Parse the prepared raw data, store the new data into a \'data\' folder'
     )
+    parser.add_argument(
+        '--all',
+        action='store_true',
+        help='Do the `--prepare` and `--parse` in a single tap'
+    )
 
     args = parser.parse_args()
-    if args.prepare:
+    args.all = args.all or not (args.prepare or args.parse)  # Do '--all' if no other args are given
+
+    if args.prepare or args.all:
         if not os.path.isdir('data'):
             os.makedirs('data')
 
         prepare()
 
-    if args.parse:
-        pass
+    if args.parse or args.all:
+        parse_all()
 

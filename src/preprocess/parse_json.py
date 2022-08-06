@@ -77,15 +77,15 @@ DMG_REGEX = '(' + '|'.join(
 
 
 class JsonParser:
-    def __init__(self, data: dict[str, Any]):
-        self.data = data
+    def __init__(self):
         self.parsed_data = dict()
 
     def log_value(self, name: str, value: Any):
         self.parsed_data[name] = value
 
     def parse_type(self, name: str, value: str):
-        type_name, type_value = value.split(' : ')
+        split_idx = value.find(' : ')
+        type_name, type_value = value[:split_idx], value[split_idx + 3:]
         self.parsed_data[type_name] = type_value
 
     def parse_niveau(self, name: str, value: str):
@@ -97,14 +97,14 @@ class JsonParser:
             self.parsed_data[name] = int(niveau)
 
     def parse_effets(self, name: str, effets: list[str]):
-        self.parsed_data[name] = list()
+        self.parsed_data[name] = dict()
         degats = []
         for effet in effets:
             parsed = JsonParser.parse_effet(effet)
             if 'dégâts' in parsed:
                 degats.append(parsed['dégâts'])
             else:
-                self.parsed_data[name].append(parsed)
+                self.parsed_data[name] |= parsed
 
         if degats != []:
             self.parsed_data['dégâts'] = degats
@@ -224,6 +224,9 @@ class JsonParser:
         CC_regex = f'{number_regex}/{number_regex}' + r'(\s\(\+(\d+)\))?'
 
         for c in caracs:
+            if ' : ' not in c:  # Bad value
+                continue
+
             key, value = c.split(' : ')
 
             if value in ['Non', 'Oui']:  # Boolean value
@@ -253,8 +256,7 @@ class JsonParser:
             if match_CC:
                 num, denom = match_CC.group(1), match_CC.group(2)
                 num, denom = int(num), int(denom)
-                frac = 0 if denom == 0 else num / denom
-                self.parsed_data[name][key] = frac
+                self.parsed_data[name][key] = (num, denom)
 
                 cc_bonus = match_CC.group(4)
                 if cc_bonus is not None:
@@ -265,8 +267,9 @@ class JsonParser:
             'bonus': self.parse_bonus,
             'bonus de la panoplie': self.parse_bonus_pano,
             'butins': self.parse_butins,
-            'caractéristiques': None,
+            'caractéristiques': self.parse_caracteristiques,
             'composition': self.parse_composition_pano,
+            'conditions': self.parse_conditions,
             'de la même famille': self.log_value,
             'description': self.log_value,
             'effets': self.parse_effets,
@@ -280,7 +283,8 @@ class JsonParser:
         for name, value in c_value.items():
             parsing_methods[name](name, value)
 
-    def parse(self) -> dict[str, Any]:
+    def parse(self, data: dict[str, any]) -> dict[str, any]:
+        self.parsed_data = dict()
         parsing_methods = {
             'url': self.log_value,
             'erreur 404': self.log_value,
@@ -291,14 +295,13 @@ class JsonParser:
             'niveau': self.parse_niveau,
         }
 
-        for name, value in self.data.items():
+        for name, value in data.items():
             parsing_methods[name](name, value)
 
         return self.parsed_data
 
     @staticmethod
     def parse_effet(effet: str) -> dict[str, Union[str, dict]]:
-        effet = effet.replace(r'{~ps}{~zs}', '(s)')
         values_r = r'^-?\d+(\sà\s-?\d+)?'
         standard_r = values_r + r'\s*' + f'({BUFF_REGEX}|{DMG_REGEX})$'
         match_standard = re.search(standard_r, effet)

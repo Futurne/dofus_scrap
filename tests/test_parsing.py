@@ -16,7 +16,7 @@ from src.preprocess.parse_json import JsonParser
     ],
 )
 def test_type_parsing(to_parse: str, key: str, value: str):
-    parser = JsonParser(None)
+    parser = JsonParser()
     parser.parse_type('type', to_parse)
     assert parser.parsed_data == {key: value}
 
@@ -35,7 +35,7 @@ def test_type_parsing(to_parse: str, key: str, value: str):
     ]
 )
 def test_niveau_parsing(to_parse: str, result: dict):
-    parser = JsonParser(None)
+    parser = JsonParser()
     parser.parse_niveau('niveau', to_parse)
     assert parser.parsed_data == result
 
@@ -53,7 +53,7 @@ def test_niveau_parsing(to_parse: str, result: dict):
     ]
 )
 def test_resistances_parsing(to_parse: list[str], result: dict):
-    parser = JsonParser(None)
+    parser = JsonParser()
     parser.parse_resistances('résistances', to_parse)
     assert parser.parsed_data == result
 
@@ -71,7 +71,7 @@ def test_resistances_parsing(to_parse: list[str], result: dict):
     ]
 )
 def test_bonus_parsing(to_parse: list[str], result: dict):
-    parser = JsonParser(None)
+    parser = JsonParser()
     parser.parse_bonus('bonus', to_parse)
     assert parser.parsed_data == result
 
@@ -105,7 +105,7 @@ def test_bonus_parsing(to_parse: list[str], result: dict):
     ]
 )
 def test_butins_parsing(to_parse: list[Union[str, list[str]]], result: dict):
-    parser = JsonParser(None)
+    parser = JsonParser()
     parser.parse_butins('butins', to_parse)
     assert parser.parsed_data == result
 
@@ -123,7 +123,7 @@ def test_butins_parsing(to_parse: list[Union[str, list[str]]], result: dict):
     ]
 )
 def test_recette_parsing(to_parse: list[str], result: dict):
-    parser = JsonParser(None)
+    parser = JsonParser()
     parser.parse_recette('recette', to_parse)
     assert parser.parsed_data == result
 
@@ -147,7 +147,7 @@ def test_recette_parsing(to_parse: list[str], result: dict):
     ]
 )
 def test_croisements_parsing(to_parse: str, result: dict):
-    parser = JsonParser(None)
+    parser = JsonParser()
     parser.parse_croisements('issu du croisement', to_parse)
     assert parser.parsed_data == result
 
@@ -171,7 +171,7 @@ def test_croisements_parsing(to_parse: str, result: dict):
     ]
 )
 def test_croisements_parsing(to_parse: str, result: dict):
-    parser = JsonParser(None)
+    parser = JsonParser()
     parser.parse_composition_pano('composition', to_parse)
     assert parser.parsed_data == result
 
@@ -203,7 +203,7 @@ def test_croisements_parsing(to_parse: str, result: dict):
                 'PA': 4,
                 'utilisations': 1,
                 'Portée': 1,
-                'CC': 1/30,
+                'CC': (1, 30),
                 'CC bonus': 15,
             }}
         ),  # Armes
@@ -213,13 +213,13 @@ def test_croisements_parsing(to_parse: str, result: dict):
                 'PA': 4,
                 'utilisations': 2,
                 'Portée': (2, 4),
-                'CC': 0,
+                'CC': (1, 0),
             }}
         ),  # Armes
     ]
 )
 def test_caracteristiques_parsing(to_parse: str, result: dict):
-    parser = JsonParser(None)
+    parser = JsonParser()
     parser.parse_caracteristiques('caractéristiques', to_parse)
     assert parser.parsed_data == result
 
@@ -243,7 +243,7 @@ def test_caracteristiques_parsing(to_parse: str, result: dict):
     ]
 )
 def test_bonus_pano_parsing(to_parse: list[Union[str, list[str]]], result: dict):
-    parser = JsonParser(None)
+    parser = JsonParser()
     parser.parse_bonus_pano('bonus de la panoplie', to_parse)
     assert parser.parsed_data == result
 
@@ -253,35 +253,35 @@ def test_bonus_pano_parsing(to_parse: list[Union[str, list[str]]], result: dict)
     [
         (
             [],
-            {'effets': []}
+            {'effets': {}}
         ),  # Empty effect
         (
             ['4 à 6 Force'],
-            {'effets': [
-                {'Force': (4, 6)},
-            ]}
+            {'effets': {
+                'Force': (4, 6),
+            }}
         ),  # Basic effet
         (
             ['-6 à -4 Force', '-1 PA'],
-            {'effets': [
-                {'Force': (-6, -4)},
-                {'PA': -1}
-            ]}
+            {'effets': {
+                'Force': (-6, -4),
+                'PA': -1
+            }}
         ),  # Basic multiple effects and negative values
         (
             ['4 à 6 Force', 'This is a special effect'],
-            {'effets': [
-                {'Force': (4, 6)},
-                {'special': 'This is a special effect'}
-            ]}
+            {'effets': {
+                'Force': (4, 6),
+                'special': 'This is a special effect'
+            }}
         ),  # Special effect
         (
             ['1 Dommage(s)', '2 à 4% Critique', '6 à 10 (dommages Neutre)', '10 (vol Feu)'],
             {
-                'effets': [
-                    {'Dommage(s)': 1},
-                    {'% Critique': (2, 4)},
-                ],
+                'effets': {
+                    'Dommage(s)': 1,
+                    '% Critique': (2, 4),
+                },
                 'dégâts': [
                     {'Neutre': (6, 10), 'vol': False},
                     {'Feu': 10, 'vol': True},
@@ -291,7 +291,7 @@ def test_bonus_pano_parsing(to_parse: list[Union[str, list[str]]], result: dict)
     ]
 )
 def test_effets_parsing(effets: list[str], result: dict):
-    parser = JsonParser(None)
+    parser = JsonParser()
     parser.parse_effets('effets', effets)
     assert parser.parsed_data == result
 
@@ -352,7 +352,7 @@ def test_effets_parsing(effets: list[str], result: dict):
     ]
 )
 def test_conditions_parsing(to_parse: str, result: dict):
-    parser = JsonParser(None)
+    parser = JsonParser()
     parser.parse_conditions('conditions', [to_parse])
     assert parser.parsed_data == result
 
