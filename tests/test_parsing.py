@@ -269,18 +269,36 @@ def test_bonus_pano_parsing(to_parse: list[Union[str, list[str]]], result: dict)
             }}
         ),  # Basic multiple effects and negative values
         (
-            ['4 à 6 Force', 'This is a special effect'],
+            ['4 à 6 Force', 'This is a special effect', 'This is another'],
             {'effets': {
                 'Force': (4, 6),
-                'special': 'This is a special effect'
+                'special': [
+                    'This is a special effect',
+                    'This is another',
+                ]
             }}
         ),  # Special effect
         (
-            ['1 Dommage(s)', '2 à 4% Critique', '6 à 10 (dommages Neutre)', '10 (vol Feu)'],
+            [
+                '1 Dommage(s)',
+                '2 à 4% Critique',
+                '6 à 10 (dommages Neutre)',
+                '10 (vol Feu)',
+                '3 à 6 Dommage(s) Terre',
+                '3 à 6 Dommage(s) Feu',
+                '1 Puissance (pièges)',
+                '3 Dommage(s) Pièges',
+                '25 à 30 Puissance',
+            ],
             {
                 'effets': {
                     'Dommage(s)': 1,
                     '% Critique': (2, 4),
+                    'Dommage(s) Terre': (3, 6),
+                    'Dommage(s) Feu': (3, 6),
+                    'Puissance (pièges)': 1,
+                    'Dommage(s) Pièges': 3,
+                    'Puissance': (25, 30),
                 },
                 'dégâts': [
                     {'Neutre': (6, 10), 'vol': False},

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+from itertools import chain
 from pprint import pprint
 from typing import Any, Union, Optional
 
@@ -25,15 +26,11 @@ VALID_BUFFS = {
     'Force',
     'Intelligence',
     'Agilité',
-    'Puissance',
     'Sagesse',
     '% Critique',
     'Pod(s)',
     'Tacle',
     'Fuite',
-    'Dommage(s)',
-    'Dommage(s) Poussée',
-    'Dommage(s) Critiques',
     'Résistance(s) Poussée',
     'Résistance(s) Critiques',
     'Soin(s)',
@@ -48,11 +45,9 @@ VALID_BUFFS = {
     '% Résistance distance',
     '% Dommages aux sorts',
     "% Dommages d'armes",
-    'Dommage(s) Pièges',
-    'Puissance (pièges)'
 }
 
-for value in ['Dommage(s)', 'Résistance(s)', '% Résistance']:
+for value in ['Résistance(s)', '% Résistance']:
     for element in ELEMENTS:
         VALID_BUFFS.add(f'{value} {element}')
 
@@ -65,10 +60,15 @@ for value in ['dommages', 'vol']:
         VALID_DMGS.add(f'({value} {element})')
 
 
-BUFF_REGEX = '(' + '|'.join(
+BUFF_REGEX = '|'.join(
     b.replace('(', r'\(').replace(')', r'\)')
     for b in VALID_BUFFS
-) + ')'
+)
+BUFF_REGEX += r'|Dommage\(s\)(\s(' + '|'.join(
+    chain(ELEMENTS, ['Poussée', 'Critiques', 'Pièges'])
+) + '))?'  # So that it is possible to match 'Dommage(s)' AND 'Dommage(s) X' properly
+BUFF_REGEX += r'|Puissance(\s\(pièges\))?'
+BUFF_REGEX = '(' + BUFF_REGEX + ')'
 
 DMG_REGEX = '(' + '|'.join(
     b.replace('(', r'\(').replace(')', r'\)')
@@ -104,7 +104,12 @@ class JsonParser:
             if 'dégâts' in parsed:
                 degats.append(parsed['dégâts'])
             else:
-                self.parsed_data[name] |= parsed
+                if 'special' in parsed:
+                    if 'special' not in self.parsed_data[name]:
+                        self.parsed_data[name]['special'] = []
+                    self.parsed_data[name]['special'].append(parsed['special'])
+                else:
+                    self.parsed_data[name] |= parsed
 
         if degats != []:
             self.parsed_data['dégâts'] = degats
@@ -340,7 +345,7 @@ class JsonParser:
             }
         }
 
-    ###### - Static methods for conditions parsing - #####
+    ###### - Static methods for conditions parsing - ######
     @staticmethod
     def parse_conditions_recursively(
             conditions: Union[str, dict[Any], list[Any]]
