@@ -1,5 +1,3 @@
-data
-data_raw
 geckodriver.log
 **/__pycache__/
 *.bkp

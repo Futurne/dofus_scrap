@@ -1,0 +1,4 @@
+outs:
+- md5: 8a7e2e0d0f2ff33dd745f7ae2573b3ff
+  size: 176
+  path: encyclopedia_state.yaml
