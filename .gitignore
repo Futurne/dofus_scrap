@@ -5,4 +5,5 @@ geckodriver.log
 *.bkp
 *.db
 *.swp
-.sav
+*.sav
+*.zip
