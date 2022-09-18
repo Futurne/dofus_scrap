@@ -1,0 +1,4 @@
+outs:
+- md5: a789aa054c32b359fa5d13146a524f6d
+  size: 48278
+  path: compagnons.json
