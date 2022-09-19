@@ -1,0 +1,5 @@
+[core]
+    remote = raspberry
+['remote "raspberry"']
+    url = ssh://dofus_scrap@192.168.1.95/home/dofus_scrap/Documents
+    ask_password = false
