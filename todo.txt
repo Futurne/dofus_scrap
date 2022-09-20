@@ -1,0 +1,3 @@
+* Buff des effets 'special' -> 'Spécial'
+* Penser à gerer les multiples effets spéciaux quand il y a besoin
+* Conditions 'special' -> 'spécial'

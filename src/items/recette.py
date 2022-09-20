@@ -1,31 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from src.items.interfaces import DofusData
 
-class Recette(DofusData):
+from src.items.element import Element
+
+
+class Recette:
     def __init__(
         self,
-        name: str,
-        item_url: str,
-        metier: str,
-        level: str,
-        recette: list[tuple[int, str]]
+        items: list[Element],
+        quantities: list[int],
     ):
-        self.name = name
-        self.item_url = item_url
-        self.metier = metier
-        self.level = level
-        self.recette = recette
+        self.items = items
+        self.quantities = quantities
 
-    def __str__(self) -> str:
-        return f'[Recette {self.name}]'
-
-    def to_dict(self) -> str:
-        return {
-            'url': self.item_url,
-            'nom': self.name,
-            'metier': self.metier,
-            'niveau': self.level,
-            'recette': self.recette,
-        }
+    def __eq__(self, other: 'self') -> bool:
+        return self.items == other.items and self.quantities == other.quantities
 
