@@ -170,7 +170,7 @@ def test_croisements_parsing(to_parse: str, result: dict):
         ),
     ]
 )
-def test_croisements_parsing(to_parse: str, result: dict):
+def test_composition_pano_parsing(to_parse: str, result: dict):
     parser = JsonParser()
     parser.parse_composition_pano('composition', to_parse)
     assert parser.parsed_data == result
@@ -230,7 +230,7 @@ def test_caracteristiques_parsing(to_parse: str, result: dict):
         (
             ['Attitude Aura du Touitcheur'],
             {'bonus de la panoplie': [
-                [{'special': 'Attitude Aura du Touitcheur'},],
+                [{'Spécial': 'Attitude Aura du Touitcheur'},],
             ]}
         ),
         (
@@ -272,7 +272,7 @@ def test_bonus_pano_parsing(to_parse: list[Union[str, list[str]]], result: dict)
             ['4 à 6 Force', 'This is a special effect', 'This is another'],
             {'effets': {
                 'Force': (4, 6),
-                'special': [
+                'Spécial': [
                     'This is a special effect',
                     'This is another',
                 ]
@@ -327,7 +327,7 @@ def test_effets_parsing(effets: list[str], result: dict):
         ('Sous-zone != Brakmar', {'conditions':
             {
                 None :[
-                    {'special': 'Sous-zone != Brakmar'},
+                    {'spécial': 'Sous-zone != Brakmar'},
                 ]
             }
         }),  # Shouldn't pick up the 'ou' and should be special
@@ -359,7 +359,7 @@ def test_effets_parsing(effets: list[str], result: dict):
                         {
                             'ou': [
                                 {'<': ('intelligence', 40)},
-                                {'special': 'être niveau 200'},
+                                {'spécial': 'être niveau 200'},
                             ],
                         }
                     ]
