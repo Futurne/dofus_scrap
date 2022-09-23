@@ -40,8 +40,8 @@ class Element(abc.ABC):
         if categorie:
             assert categorie in CATEGORIES, f"Category {categorie} not found in the known categories."
 
-    @abc.abstractclassmethod
-    def from_dict(element: dict[any]) -> "self":
+    @abc.abstractstaticmethod
+    def from_dict(element: dict[str, any]) -> "self":
         pass
 
     @abc.abstractmethod

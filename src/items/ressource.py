@@ -28,3 +28,25 @@ class Ressource(Element):
         self.condititions = conditions
         self.recette = recette
 
+    @staticmethod
+    def from_dict(element: dict[str, any]) -> 'self':
+        effets = [
+            Effet.from_dict(e) for e in element['effets']
+        ] if 'effets' in element else None
+        conditions = ConditionsNoeud.from_dict(element['conditions']) if 'conditions' in element else None
+        return Ressource(
+            element['url'],
+            element['nom'],
+            element['illustration_url'],
+            'Ressources',
+            element['Type'],
+            element['niveau'],
+            element['description'] if 'description' in element else None,
+            effets,
+            conditions,
+            recette = None  # Do not build recette yet, wait for all the items to be in db
+        )
+
+    def to_dict(self) -> dict[any]:
+        raise RuntimeError('Not implemented error')
+
