@@ -5,18 +5,18 @@ import abc
 
 
 CATEGORIES = {
-    'Armes',
-    'Bestiaire',
-    'Compagnons',
-    'Consommables',
-    'Équippements',
-    'Familiers',
-    'Harnachements',
-    'Idoles',
-    'Montures',
+    "Armes",
+    "Bestiaire",
+    "Compagnons",
+    "Consommables",
+    "Équippements",
+    "Familiers",
+    "Harnachements",
+    "Idoles",
+    "Montures",
     "Objet d'apparats",
-    'Panoplies',
-    'Ressources',
+    "Panoplies",
+    "Ressources",
 }
 
 
@@ -38,7 +38,20 @@ class Element(abc.ABC):
         self.type_or_race = type_or_race
 
         if categorie:
-            assert categorie in CATEGORIES, f"Category {categorie} not found in the known categories."
+            assert (
+                categorie in CATEGORIES
+            ), f"Category {categorie} not found in the known categories."
+
+    def __eq__(self, other: "self") -> bool:
+        tests = [
+            self.url == other.url,
+            self.erreur_404 == other.erreur_404,
+            self.nom == other.nom,
+            self.illu_url == other.illu_url,
+            self.categorie == other.categorie,
+            self.type_or_race == other.type_or_race,
+        ]
+        return all(tests)
 
     @abc.abstractstaticmethod
     def from_dict(element: dict[str, any]) -> "self":
@@ -47,4 +60,3 @@ class Element(abc.ABC):
     @abc.abstractmethod
     def to_dict(self) -> dict[any]:
         pass
-

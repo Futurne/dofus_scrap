@@ -6,6 +6,7 @@ import pytest
 from src.items.buff import Buff
 from src.items.effet import Effet
 from src.items.conditions import ConditionsFeuille, ConditionsNoeud
+from src.items.ressource import Ressource
 
 
 def test_conditions_parsing():
@@ -111,3 +112,45 @@ def test_effet_parsing():
     parsed_object = Effet(Buff('Spécial'), special="Le porteur vole de la vie dans son meilleur élément d'attaque en fin de tour aux entités à son contact.")
     assert Effet.from_dict(parsed_json) == parsed_object
 
+
+def test_ressource_parsing():
+    parsed_json = {
+        "nom": "Frostiz",
+        "url": "https://www.dofus.com/fr/mmorpg/encyclopedie/ressources/11109-frostiz",
+        "illustration_url": "https://static.ankama.com/dofus/www/game/items/200/34552.png",
+        "Type": "Céréale",
+        "description": "Cette céréale est surprenante, en plus de résister au climat extrême de Frigost, elle donne un goût de chocolat au lailait dans lequel elle est plongée.",
+        "niveau": 200,
+        'effets': {
+          "Spécial": [
+            "3",
+            "Rage du Mulou (niveau 200) : • Le porteur gagne 5% de dommages finaux pendant 2 tours à chaque mort d'un allié (hors invocations) présent au début du combat (cumulable 2 fois)."
+          ]
+        },
+        "conditions": {
+            "null": [
+                {
+                    "spécial": "Quête 'Rencontres d’un soir' achevée"
+                }
+            ]
+        }
+    }
+
+    effets = [
+        Effet(Buff('Spécial'), special='3'),
+        Effet(Buff('Spécial'), special="Rage du Mulou (niveau 200) : • Le porteur gagne 5% de dommages finaux pendant 2 tours à chaque mort d'un allié (hors invocations) présent au début du combat (cumulable 2 fois).")
+    ]
+    conditions = ConditionsNoeud.from_dict(parsed_json['conditions'])
+    parsed_object = Ressource(
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/ressources/11109-frostiz',
+        'Frostiz',
+        'https://static.ankama.com/dofus/www/game/items/200/34552.png',
+        'Ressources',
+        'Céréale',
+        200,
+        'Cette céréale est surprenante, en plus de résister au climat extrême de Frigost, elle donne un goût de chocolat au lailait dans lequel elle est plongée.',
+        effets,
+        conditions
+    )
+
+    assert Ressource.from_dict(parsed_json) == parsed_object

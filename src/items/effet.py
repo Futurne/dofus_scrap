@@ -37,4 +37,3 @@ class Effet:
                 return Effet(Buff(buff), (a, b))
             case _:
                 raise RuntimeError(f'Unkown effect {effet}')
-

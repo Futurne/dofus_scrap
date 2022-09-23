@@ -25,14 +25,33 @@ class Ressource(Element):
         self.niveau = niveau
         self.description = description
         self.effets = effets
-        self.condititions = conditions
+        self.conditions = conditions
         self.recette = recette
+
+    def __eq__(self, other: 'self') -> bool:
+        tests = [
+            super().__eq__(other),
+            self.niveau == other.niveau,
+            self.description == other.description,
+            self.effets == other.effets,
+            self.conditions == other.conditions,
+            self.recette == other.recette,
+        ]
+        return all(tests)
 
     @staticmethod
     def from_dict(element: dict[str, any]) -> 'self':
-        effets = [
-            Effet.from_dict(e) for e in element['effets']
-        ] if 'effets' in element else None
+        effets = None
+        if 'effets' in element:
+            effets = []
+            for e in element['effets']:
+                match e:
+                    case 'Spécial':
+                        for value in element['effets'][e]:
+                            effets.append(Effet.from_dict({e: value}))
+                    case _:
+                        effets.append(Effet.from_dict(element['effets'][e]))
+
         conditions = ConditionsNoeud.from_dict(element['conditions']) if 'conditions' in element else None
         return Ressource(
             element['url'],
