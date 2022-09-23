@@ -37,7 +37,6 @@ class Panoplie(Element):
 
             bonus.append(current_dict)
 
-        print(bonus)
         bonus = [
             Effet.from_multiple(bonus_p)
             for bonus_p in bonus
