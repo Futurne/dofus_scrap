@@ -43,14 +43,7 @@ class Ressource(Element):
     def from_dict(element: dict[str, any]) -> 'self':
         effets = None
         if 'effets' in element:
-            effets = []
-            for e in element['effets']:
-                match e:
-                    case 'Spécial':
-                        for value in element['effets'][e]:
-                            effets.append(Effet.from_dict({e: value}))
-                    case _:
-                        effets.append(Effet.from_dict(element['effets'][e]))
+            effets = Effet.from_multiple(element['effets'])
 
         conditions = ConditionsNoeud.from_dict(element['conditions']) if 'conditions' in element else None
         return Ressource(
@@ -68,4 +61,3 @@ class Ressource(Element):
 
     def to_dict(self) -> dict[any]:
         raise RuntimeError('Not implemented error')
-

@@ -162,4 +162,3 @@ class EncyclopediaScrap:
     @staticmethod
     def get_page_number(basename_url: str, number: int) -> str:
         return f'{basename_url}?page={number}'
-

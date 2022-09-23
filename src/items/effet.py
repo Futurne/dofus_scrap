@@ -25,7 +25,7 @@ class Effet:
             self.special == other.special
 
     @staticmethod
-    def from_dict(effet: dict[any]) -> 'self':
+    def from_dict(effet: dict[str, any]) -> 'self':
         buff = next(iter(effet))
         if buff == 'Spécial':
             return Effet(Buff(buff), special=effet[buff])
@@ -37,3 +37,15 @@ class Effet:
                 return Effet(Buff(buff), (a, b))
             case _:
                 raise RuntimeError(f'Unkown effect {effet}')
+
+    @staticmethod
+    def from_multiple(effets: dict[str, any]) -> list['self']:
+        parsed = []
+        for e in effets:
+            match e:
+                case 'Spécial':
+                    for value in effets[e]:
+                        parsed.append(Effet.from_dict({e: value}))
+                case _:
+                    parsed.append(Effet.from_dict({e: effets[e]}))
+        return parsed

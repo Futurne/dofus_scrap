@@ -22,11 +22,25 @@ class Panoplie(Element):
 
     @staticmethod
     def from_dict(element: dict[str, any]) -> 'self':
+        bonus = []
+        for bonus_p in element['bonus de la panoplie']:
+            current_dict = dict()
+            for effet in bonus_p:
+                key, value = next(iter(effet.items()))
+                match key:
+                    case 'Spécial':
+                        if 'Spécial' not in current_dict:
+                            current_dict['Spécial'] = []
+                        current_dict['Spécial'].append(value)
+                    case _:
+                        current_dict[key] = value
+
+            bonus.append(current_dict)
+
+        print(bonus)
         bonus = [
-            [
-                Effet.from_dict(e) for e in bonus_p
-            ]
-            for bonus_p in element['bonus de la panoplie']
+            Effet.from_multiple(bonus_p)
+            for bonus_p in bonus
         ]
         return Panoplie(
             element['url'],
@@ -41,3 +55,10 @@ class Panoplie(Element):
     def to_dict(self) -> dict[str, any]:
         raise RuntimeError('Not implemented')
 
+    def __eq__(self, other: 'self') -> bool:
+        tests = [
+            super().__eq__(other),
+            self.items == other.items,
+            self.bonus == other.bonus,
+        ]
+        return all(tests)

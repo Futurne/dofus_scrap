@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pytest
-
 from src.items.buff import Buff
 from src.items.effet import Effet
 from src.items.conditions import ConditionsFeuille, ConditionsNoeud
 from src.items.ressource import Ressource
+from src.items.panoplie import Panoplie
 
 
 def test_conditions_parsing():
@@ -154,3 +153,70 @@ def test_ressource_parsing():
     )
 
     assert Ressource.from_dict(parsed_json) == parsed_object
+
+
+def test_panoplie_parsing():
+    parsed_json = {
+        "nom": "Panoplie du Sinistrofu",
+        "url": "https://www.dofus.com/fr/mmorpg/encyclopedie/panoplies/275-panoplie-sinistrofu",
+        "illustration_url": "https://static.ankama.com/dofus/renderer/look/7b317c38302c323132342c323531357c313d31363736353536342c323d31363335353838332c333d31363737373138352c343d323931303036342c353d31343536313739397c3134307d/full/1/200_200-10.png",
+        "Type": "Panoplie",
+        "bonus de la panoplie": [
+          [
+            {
+              "Chance": 50
+            },
+            {
+              "Résistance(s) Critiques": 15
+            },
+            {
+              "Résistance(s) Poussée": 30
+            }
+          ],
+          [
+            {
+              "Chance": 50
+            },
+            {
+              "Résistance(s) Critiques": 15
+            },
+            {
+              "Résistance(s) Poussée": 30
+            },
+            {
+              "PA": 1
+            }
+          ]
+        ],
+        "composition": [
+          "Cape du Sinistrofu",
+          "Amulette du Sinistrofu",
+          "Bottes du Sinistrofu"
+        ],
+        "niveau": 200
+    }
+
+    bonus = [
+        [
+            Effet(Buff('Chance'), (50, 50)),
+            Effet(Buff('Résistance(s) Critiques'), (15, 15)),
+            Effet(Buff('Résistance(s) Poussée'), (30, 30)),
+        ],
+        [
+            Effet(Buff('Chance'), (50, 50)),
+            Effet(Buff('Résistance(s) Critiques'), (15, 15)),
+            Effet(Buff('Résistance(s) Poussée'), (30, 30)),
+            Effet(Buff('PA'), (1, 1)),
+        ]
+    ]
+    parsed_object = Panoplie(
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/panoplies/275-panoplie-sinistrofu',
+        'Panoplie du Sinistrofu',
+        'https://static.ankama.com/dofus/renderer/look/7b317c38302c323132342c323531357c313d31363736353536342c323d31363335353838332c333d31363737373138352c343d323931303036342c353d31343536313739397c3134307d/full/1/200_200-10.png',
+        'Panoplies',
+        'Panoplie',
+        None,
+        bonus,
+    )
+
+    assert Panoplie.from_dict(parsed_json) == parsed_object
