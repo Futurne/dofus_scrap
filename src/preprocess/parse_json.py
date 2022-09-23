@@ -104,10 +104,10 @@ class JsonParser:
             if 'dégâts' in parsed:
                 degats.append(parsed['dégâts'])
             else:
-                if 'special' in parsed:
-                    if 'special' not in self.parsed_data[name]:
-                        self.parsed_data[name]['special'] = []
-                    self.parsed_data[name]['special'].append(parsed['special'])
+                if 'Spécial' in parsed:
+                    if 'Spécial' not in self.parsed_data[name]:
+                        self.parsed_data[name]['Spécial'] = []
+                    self.parsed_data[name]['Spécial'].append(parsed['Spécial'])
                 else:
                     self.parsed_data[name] |= parsed
 
@@ -312,7 +312,7 @@ class JsonParser:
         match_standard = re.search(standard_r, effet)
         if not match_standard:
             # Effet special => keep str
-            return {'special': effet}
+            return {'Spécial': effet}
 
         values = re.search(values_r, effet).group()
         if 'à' in values:
@@ -355,7 +355,7 @@ class JsonParser:
                 standard_cond = r'.+\s(<|>)\s\d+'
                 match_std = re.search(standard_cond, conditions)
                 if not match_std:
-                    return {'special': conditions}
+                    return {'spécial': conditions}
                 
                 bool_op = match_std.group(1)
                 left_cond, right_cond = conditions.split(f' {bool_op} ')
