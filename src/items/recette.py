@@ -13,6 +13,5 @@ class Recette:
         self.items = items
         self.quantities = quantities
 
-    def __eq__(self, other: 'self') -> bool:
+    def __eq__(self, other) -> bool:
         return self.items == other.items and self.quantities == other.quantities
-

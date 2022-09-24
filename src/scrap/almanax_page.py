@@ -34,4 +34,3 @@ class AlmanaxPage:
         desc = desc.find('p')  # Find the first 'p' balise
         desc = desc.text
         return desc
-

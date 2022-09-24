@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import abc
+from typing import Optional
 
 
 CATEGORIES = {
@@ -25,10 +26,10 @@ class Element(abc.ABC):
         self,
         url: str,
         erreur_404: bool,
-        nom: str = None,
-        illu_url: str = None,
-        categorie: str = None,
-        type_or_race: str = None,
+        nom: Optional[str] = None,
+        illu_url: Optional[str] = None,
+        categorie: Optional[str] = None,
+        type_or_race: Optional[str] = None,
     ):
         self.url = url
         self.erreur_404 = erreur_404
@@ -42,7 +43,7 @@ class Element(abc.ABC):
                 categorie in CATEGORIES
             ), f"Category {categorie} not found in the known categories."
 
-    def __eq__(self, other: "self") -> bool:
+    def __eq__(self, other) -> bool:
         tests = [
             self.url == other.url,
             self.erreur_404 == other.erreur_404,
@@ -54,9 +55,9 @@ class Element(abc.ABC):
         return all(tests)
 
     @abc.abstractstaticmethod
-    def from_dict(element: dict[str, any]) -> "self":
+    def from_dict(element: dict):
         pass
 
     @abc.abstractmethod
-    def to_dict(self) -> dict[any]:
+    def to_dict(self) -> dict:
         pass

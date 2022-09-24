@@ -129,7 +129,7 @@ class JsonParser:
         }
 
     def parse_butins(self, name: str, butins: list[Union[list[str], str]]):
-        def parse(butins: Union[str, list[str]]) -> dict[str, float]:
+        def parse(butins: Union[str, list[str]]) -> Union[dict[str, float], dict[str, tuple[float, float]]]:
             if type(butins) is str:
                 name, drop = butins.split(' | ')
                 drop = drop.replace(' %', '')
@@ -266,7 +266,7 @@ class JsonParser:
                 if cc_bonus is not None:
                     self.parsed_data[name]['CC bonus'] = int(cc_bonus)
 
-    def parse_containers(self, c_name: str, c_value: str):
+    def parse_containers(self, c_name: str, c_value: dict):
         parsing_methods = {
             'bonus': self.parse_bonus,
             'bonus de la panoplie': self.parse_bonus_pano,
@@ -287,7 +287,7 @@ class JsonParser:
         for name, value in c_value.items():
             parsing_methods[name](name, value)
 
-    def parse(self, data: dict[str, any]) -> dict[str, any]:
+    def parse(self, data: dict) -> dict:
         self.parsed_data = dict()
         parsing_methods = {
             'url': self.log_value,
@@ -347,8 +347,8 @@ class JsonParser:
     ###### - Static methods for conditions parsing - ######
     @staticmethod
     def parse_conditions_recursively(
-            conditions: Union[str, dict[Any], list[Any]]
-    ) -> Union[str, dict[Any], list[Any]]:
+            conditions: Union[str, dict[Any, Any], list[Any]]
+    ) -> Optional[Union[str, dict[Any, Any], list[Any]]]:
         match conditions:
             case str():
                 standard_cond = r'.+\s(<|>)\s\d+'

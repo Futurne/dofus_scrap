@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Optional
+
 from src.items.element import Element
 from src.items.effet import Effet
 
@@ -13,7 +15,7 @@ class Panoplie(Element):
         illu_url: str,
         categorie: str,
         type_or_race: str,
-        items: list[Element],
+        items: Optional[list[Element]],
         bonus: list[list[Effet]],
     ):
         super().__init__(url, False, nom, illu_url, categorie, type_or_race)
@@ -21,7 +23,7 @@ class Panoplie(Element):
         self.bonus = bonus
 
     @staticmethod
-    def from_dict(element: dict[str, any]) -> 'self':
+    def from_dict(element: dict):
         bonus = []
         for bonus_p in element['bonus de la panoplie']:
             current_dict = dict()
@@ -51,10 +53,10 @@ class Panoplie(Element):
             bonus = bonus,
         )
 
-    def to_dict(self) -> dict[str, any]:
+    def to_dict(self) -> dict:
         raise RuntimeError('Not implemented')
 
-    def __eq__(self, other: 'self') -> bool:
+    def __eq__(self, other) -> bool:
         tests = [
             super().__eq__(other),
             self.items == other.items,

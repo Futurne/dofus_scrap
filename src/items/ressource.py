@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Optional
+
 from src.items.element import Element
 from src.items.conditions import ConditionsNoeud
 from src.items.effet import Effet
@@ -16,10 +18,10 @@ class Ressource(Element):
         categorie: str,
         type_or_race: str,
         niveau: int,
-        description: str = None,
-        effets: list[Effet] = None,
-        conditions: ConditionsNoeud = None,
-        recette: Recette = None,
+        description: Optional[str] = None,
+        effets: Optional[list[Effet]] = None,
+        conditions: Optional[ConditionsNoeud] = None,
+        recette: Optional[Recette] = None,
     ):
         super().__init__(url, False, nom, illu_url, categorie, type_or_race)
         self.niveau = niveau
@@ -28,7 +30,7 @@ class Ressource(Element):
         self.conditions = conditions
         self.recette = recette
 
-    def __eq__(self, other: 'self') -> bool:
+    def __eq__(self, other) -> bool:
         tests = [
             super().__eq__(other),
             self.niveau == other.niveau,
@@ -40,7 +42,7 @@ class Ressource(Element):
         return all(tests)
 
     @staticmethod
-    def from_dict(element: dict[str, any]) -> 'self':
+    def from_dict(element: dict):
         effets = None
         if 'effets' in element:
             effets = Effet.from_multiple(element['effets'])
@@ -59,5 +61,5 @@ class Ressource(Element):
             recette = None  # Do not build recette yet, wait for all the items to be in db
         )
 
-    def to_dict(self) -> dict[any]:
+    def to_dict(self) -> dict:
         raise RuntimeError('Not implemented error')

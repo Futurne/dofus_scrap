@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from typing import Union
+from typing import Union, Optional
 
 from src.items.buff import Buff
 
@@ -22,9 +22,9 @@ class ConditionsFeuille:
     def __init__(
         self,
         cond_type: str,
-        left_buff: Buff = None,
-        right_value: int = None,
-        special_value: str = None,
+        left_buff: Optional[Buff] = None,
+        right_value: Optional[int] = None,
+        special_value: Optional[str] = None,
     ):
         self.cond_type = cond_type
         self.left_buff = left_buff
@@ -38,7 +38,7 @@ class ConditionsFeuille:
         else:
             assert left_buff is None and right_value is None
 
-    def __eq__(self, other: 'self') -> bool:
+    def __eq__(self, other) -> bool:
         return all([
             self.cond_type == other.cond_type,
             self.left_buff == other.left_buff,
@@ -47,7 +47,7 @@ class ConditionsFeuille:
         ])
 
     @staticmethod
-    def from_dict(feuille: dict[any]) -> 'self':
+    def from_dict(feuille: dict):
         cond_type = next(iter(feuille.keys()))
         match cond_type:
             case 'spécial':
@@ -77,12 +77,12 @@ class ConditionsNoeud:
 
         assert node_type in NODE_TYPES, f'Node type of {node_type} unknown.'
 
-    def __eq__(self, other: 'self') -> bool:
+    def __eq__(self, other) -> bool:
         return self.node_type == other.node_type and\
             all([sc == so for sc, so in zip(self.children_nodes, other.children_nodes)])
 
     @staticmethod
-    def from_dict(conditions: dict[any]) -> 'self':
+    def from_dict(conditions: dict):
         node_type = next(iter(conditions.keys()))
         children = conditions[node_type]
         parsed_children = []
@@ -101,4 +101,3 @@ class ConditionsNoeud:
                 raise RuntimeError(f'Unknown child key {child_key}.')
 
         return ConditionsNoeud(node_type, parsed_children)
-

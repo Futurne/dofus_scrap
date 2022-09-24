@@ -230,4 +230,3 @@ class ScrapItem:
             ]
         else:  # A simple string content
             return element.text
-
