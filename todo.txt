@@ -1,1 +1,13 @@
-* Penser à gerer les multiples effets spéciaux quand il y a besoin
+Parse items (1st order):
+ * Consommable
+ * Ressource - OK
+ * Équipement
+ * Bestiaire
+ * Harnachement - OK
+ * Objet d'apparat
+ * Montures
+ * Compagnon - OK
+ * Idole
+ * Familier
+ * Arme
+ * Panoplie - OK
