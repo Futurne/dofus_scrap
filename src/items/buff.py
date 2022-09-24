@@ -12,6 +12,7 @@ VALID_BUFFS = copy(VALID_BUFFS)
 VALID_BUFFS |= {'Spécial'}
 for element in ['Agilité', 'Force', 'Chance', 'Intelligence', 'Vitalité', 'Sagesse']:
     VALID_BUFFS |= {f'{element} de base'}
+VALID_BUFFS |= {"Niveau d'alignement"}
 
 
 class Buff:

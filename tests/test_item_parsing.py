@@ -7,6 +7,7 @@ from src.items.conditions import ConditionsFeuille, ConditionsNoeud
 from src.items.ressource import Ressource
 from src.items.panoplie import Panoplie
 from src.items.compagnon import Compagnon
+from src.items.harnachement import Harnachement
 
 
 def test_conditions_parsing():
@@ -242,3 +243,40 @@ def test_compagnon_parsing():
     )
 
     assert Compagnon.from_dict(parsed_json) == parsed_object
+
+
+def test_harnachement_parsing():
+    parsed_json = {
+        "nom": "Harnachement de Muldo Brâkmarien",
+        "url": "https://www.dofus.com/fr/mmorpg/encyclopedie/harnachements/18148-harnachement-muldo-brakmarien",
+        "illustration_url": "https://static.ankama.com/dofus/www/game/items/200/182010.png",
+        "Type": "Harnachements de Muldo",
+        "description": "Si « vilenie » est votre deuxième prénom, n’hésitez plus ; équipez votre Muldo de ce harnachement et montrez votre dévouement à la cause néfaste de Brâkmar.",
+        "conditions": {
+          "et": [
+            {
+              "spécial": "Alignement 2"
+            },
+            {
+              ">": [
+                "Niveau d'alignement",
+                19
+              ]
+            }
+          ]
+        },
+        "niveau": 60
+    }
+
+    parsed_object = Harnachement(
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/harnachements/18148-harnachement-muldo-brakmarien',
+        'Harnachement de Muldo Brâkmarien',
+        'https://static.ankama.com/dofus/www/game/items/200/182010.png',
+        'Harnachements',
+        'Harnachements de Muldo',
+        60,
+        "Si « vilenie » est votre deuxième prénom, n’hésitez plus ; équipez votre Muldo de ce harnachement et montrez votre dévouement à la cause néfaste de Brâkmar.",
+        ConditionsNoeud.from_dict(parsed_json['conditions'])
+    )
+
+    assert Harnachement.from_dict(parsed_json) == parsed_object
