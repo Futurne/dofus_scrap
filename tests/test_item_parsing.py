@@ -6,6 +6,7 @@ from src.items.effet import Effet
 from src.items.conditions import ConditionsFeuille, ConditionsNoeud
 from src.items.ressource import Ressource
 from src.items.panoplie import Panoplie
+from src.items.compagnon import Compagnon
 
 
 def test_conditions_parsing():
@@ -220,3 +221,24 @@ def test_panoplie_parsing():
     )
 
     assert Panoplie.from_dict(parsed_json) == parsed_object
+
+
+def test_compagnon_parsing():
+    parsed_json = {
+        "nom": "Abdoul Heure",
+        "url": "https://www.dofus.com/fr/mmorpg/encyclopedie/compagnons/40-abdoul-heure",
+        "illustration_url": "https://static.ankama.com/dofus/renderer/look/7b317c3131302c323137352c333939322c343034367c313d236666643237632c323d236539656265302c333d233236333933392c343d233236333933392c353d233133393739317c3134357d/full/1/200_200-10.png",
+        "Type": "Compagnon",
+        "description": "Encore toute récente, la découverte de la parchomancie fût précurseuse d'une vague d'incarnation sans précédent. Dans l'effervescence générale, de nombreux groupes et guildes se sont formés. L'ordre des Compagnons est de loin le plus mystérieux de ces groupes ; ses membres semblent même déjà maîtriser la parchomancie sur le bout des doigts. Serait-il possible que cette magie ne soit finalement pas si jeune ? En tout cas, une chose est sûre : ces compagnons savent combattre avec style. Abdoul est habillé par le soyeux Barbe Douce, que l'on peut souvent apercevoir en train de coudre dans les reflets des boucliers Hitche."
+    }
+
+    parsed_object = Compagnon(
+        'https://www.dofus.com/fr/mmorpg/encyclopedie/compagnons/40-abdoul-heure',
+        'Abdoul Heure',
+        'https://static.ankama.com/dofus/renderer/look/7b317c3131302c323137352c333939322c343034367c313d236666643237632c323d236539656265302c333d233236333933392c343d233236333933392c353d233133393739317c3134357d/full/1/200_200-10.png',
+        'Compagnons',
+        'Compagnon',
+        "Encore toute récente, la découverte de la parchomancie fût précurseuse d'une vague d'incarnation sans précédent. Dans l'effervescence générale, de nombreux groupes et guildes se sont formés. L'ordre des Compagnons est de loin le plus mystérieux de ces groupes ; ses membres semblent même déjà maîtriser la parchomancie sur le bout des doigts. Serait-il possible que cette magie ne soit finalement pas si jeune ? En tout cas, une chose est sûre : ces compagnons savent combattre avec style. Abdoul est habillé par le soyeux Barbe Douce, que l'on peut souvent apercevoir en train de coudre dans les reflets des boucliers Hitche.",
+    )
+
+    assert Compagnon.from_dict(parsed_json) == parsed_object
