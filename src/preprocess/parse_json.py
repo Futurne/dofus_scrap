@@ -355,7 +355,7 @@ class JsonParser:
                 match_std = re.search(standard_cond, conditions)
                 if not match_std:
                     return {'spécial': conditions}
-                
+
                 bool_op = match_std.group(1)
                 left_cond, right_cond = conditions.split(f' {bool_op} ')
                 return {
