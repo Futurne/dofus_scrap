@@ -3,8 +3,10 @@
 
 from src.items.buff import Buff
 from src.items.conditions import ConditionsFeuille, ConditionsNoeud
+from src.items.degats import Degat
 from src.items.effet import Effet
 from src.items.element import Element, to_item
+from src.items.recette import Recette
 
 
 def test_conditions_parsing():
@@ -98,8 +100,7 @@ def test_effet_parsing():
     assert Effet.from_dict(parsed_json) == parsed_object
 
 
-def test_element_parsing():
-    # Testing ressource
+def test_ressource_parsing():
     parsed_json = {
         "nom": "Frostiz",
         "url": "https://www.dofus.com/fr/mmorpg/encyclopedie/ressources/11109-frostiz",
@@ -142,7 +143,8 @@ def test_element_parsing():
 
     assert parsed_object == to_item("Ressources", parsed_json)
 
-    # Testing panoplie
+
+def test_panoplie_parsing():
     parsed_json = {
         "nom": "Panoplie du Sinistrofu",
         "url": "https://www.dofus.com/fr/mmorpg/encyclopedie/panoplies/275-panoplie-sinistrofu",
@@ -202,3 +204,77 @@ def test_element_parsing():
     )
 
     assert to_item("Panoplies", parsed_json) == parsed_object
+
+
+def test_arme_parsing():
+    parsed_json = {
+        "nom": "Hache Ériphe",
+        "url": "https://www.dofus.com/fr/mmorpg/encyclopedie/armes/13896-hache-eriphe",
+        "illustration_url": "https://static.ankama.com/dofus/www/game/items/200/19065.png",
+        "Type": "Hache",
+        "description": "C'est la hache idéale pour faire régner la loi dans les petites localités de l'ouest d'Amakna. Si vous vous en sortez bien, vous aurez un joli badge en forme d'étoile.",
+        "effets": {
+            "Vitalité": [201, 250],
+            "Force": [41, 60],
+            "Agilité": [41, 60],
+        },
+        "dégâts": [
+            {"Neutre": [15, 19], "vol": False},
+            {"Air": [21, 27], "vol": False},
+            {"Terre": [8, 11], "vol": True},
+        ],
+        "caractéristiques": {
+            "PA": 5,
+            "utilisations": 1,
+            "Portée": 1,
+            "CC": [1, 5],
+            "CC bonus": 4,
+        },
+        "conditions": {"et": [{">": ["Force", 350]}, {">": ["Agilité de base", 350]}]},
+        "recette": {
+            "Galet brasillant": 3,
+            "Oreille de Sphincter Cell": 11,
+            "Cœur d'Empaillé": 4,
+        },
+        "niveau": 200,
+    }
+
+    effets = [
+        Effet(Buff("Vitalité"), (201, 250)),
+        Effet(Buff("Force"), (41, 60)),
+        Effet(Buff("Agilité"), (41, 60)),
+    ]
+    degats = [
+        Degat("Neutre", (15, 19), False),
+        Degat("Air", (21, 27), False),
+        Degat("Terre", (8, 11), True),
+    ]
+    other_properties = {
+        "effets": effets,
+        "dégâts": degats,
+        "recette": Recette(
+            ["Galet brasillant", "Oreille de Sphincter Cell", "Cœur d'Empaillé"],
+            [3, 11, 4],
+        ),
+        "caractéristiques": {
+            "PA": 5,
+            "utilisations": 1,
+            "Portée": (1, 1),
+            "CC": (1, 5),
+            "CC bonus": 4,
+        },
+        "conditions": ConditionsNoeud.from_dict(parsed_json["conditions"]),
+        "niveau": 200,
+        "description": "C'est la hache idéale pour faire régner la loi dans les petites localités de l'ouest d'Amakna. Si vous vous en sortez bien, vous aurez un joli badge en forme d'étoile.",
+    }
+    parsed_object = Element(
+        "https://www.dofus.com/fr/mmorpg/encyclopedie/armes/13896-hache-eriphe",
+        False,
+        "Hache Ériphe",
+        "https://static.ankama.com/dofus/www/game/items/200/19065.png",
+        "Armes",
+        "Hache",
+        other_properties,
+    )
+
+    assert to_item("Armes", parsed_json) == parsed_object

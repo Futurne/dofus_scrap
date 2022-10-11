@@ -5,6 +5,7 @@ ELEMENTS = {
     "Air",
     "Eau",
     "Feu",
+    "Neutre",
     "Terre",
 }
 

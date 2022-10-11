@@ -3,6 +3,7 @@
 
 from typing import Optional
 
+from src.items.caracteristiques import parse_caracs
 from src.items.conditions import ConditionsNoeud
 from src.items.degats import Degat
 from src.items.effet import Effet
@@ -90,13 +91,14 @@ def to_item(category: str, data: dict) -> Element:
     other_properties = dict()
 
     property_parser = {
-        #  Basic element properties
+        # Basic element properties
         "nom": lambda value: element_properties.update({"nom": value}),
         "url": lambda value: element_properties.update({"url": value}),
         "illustration_url": lambda value: element_properties.update(
             {"illu_url": value}
         ),
         "Type": lambda value: element_properties.update({"type_or_race": value}),
+        "Race": lambda value: element_properties.update({"type_or_race": value}),
         "erreur_404": lambda value: element_properties.update({"erreur_404": value}),
         # Other properties
         "conditions": ConditionsNoeud.from_dict,
@@ -104,9 +106,11 @@ def to_item(category: str, data: dict) -> Element:
         "effets": Effet.from_multiple,
         "recette": Recette.from_dict,
         "bonus de la panoplie": bonus_pano_from_list,
+        "caractéristiques": lambda value: parse_caracs(category, value),
         "description": lambda value: value,
         "niveau": lambda value: value,
         "composition": lambda value: value,
+        "sorts": lambda value: value,
     }
     for property, value in data.items():
         if property not in property_parser:
