@@ -6,12 +6,11 @@ from typing import Optional
 
 from src.preprocess.parse_json import VALID_BUFFS
 
-
 # Init VALID_BUFFS with some other buffs
 VALID_BUFFS = copy(VALID_BUFFS)
-VALID_BUFFS |= {'Spécial'}
-for element in ['Agilité', 'Force', 'Chance', 'Intelligence', 'Vitalité', 'Sagesse']:
-    VALID_BUFFS |= {f'{element} de base'}
+VALID_BUFFS |= {"Spécial"}
+for element in ["Agilité", "Force", "Chance", "Intelligence", "Vitalité", "Sagesse"]:
+    VALID_BUFFS |= {f"{element} de base"}
 VALID_BUFFS |= {"Niveau d'alignement"}
 
 
@@ -23,7 +22,7 @@ class Buff:
     ):
         self.nom = nom
         self.poids = poids
-        
+
         assert nom in VALID_BUFFS
 
     def __eq__(self, other) -> bool:
