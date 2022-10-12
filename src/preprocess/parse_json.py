@@ -72,6 +72,18 @@ DMG_REGEX = (
 )
 
 
+NON_TUPLE_KEY = {
+    "Génération",
+    "Nombre de pods",
+    "Taux d'apprentissage",
+    "Temps de gestation",
+    "Maturité",
+    "Vitesse",
+    "Énergie",
+    "Vitesse de déplacement",
+}
+
+
 class JsonParser:
     def __init__(self):
         self.parsed_data = dict()
@@ -79,7 +91,7 @@ class JsonParser:
     def log_value(self, name: str, value: Any):
         self.parsed_data[name] = value
 
-    def parse_type(self, name: str, value: str):
+    def parse_type(self, _: str, value: str):
         split_idx = value.find(" : ")
         type_name, type_value = value[:split_idx], value[split_idx + 3 :]
         self.parsed_data[type_name] = type_value
@@ -117,12 +129,14 @@ class JsonParser:
         ]
         self.parsed_data[name] = croisements
 
-    def parse_bonus(self, name: str, bonus: list[str]):
+    def parse_bonus(self, _: str, bonus: list[str]):
         exp, butin = bonus
-        self.parsed_data[name] = {
-            " ".join(exp.split(" ")[:-1]): int(exp.split(" ")[-1]),
-            " ".join(butin.split(" ")[:-1]): int(butin.split(" ")[-1]),
-        }
+        self.parsed_data.update(
+            {
+                " ".join(exp.split(" ")[:-1]): int(exp.split(" ")[-1]),
+                " ".join(butin.split(" ")[:-1]): int(butin.split(" ")[-1]),
+            }
+        )
 
     def parse_butins(self, name: str, butins: list[Union[list[str], str]]):
         def parse(
@@ -132,7 +146,7 @@ class JsonParser:
                 name, drop = butins.split(" | ")
                 drop = drop.replace(" %", "")
                 if " - " not in drop:
-                    return {name: float(drop)}
+                    return {name: (float(drop), float(drop))}
                 else:
                     min_drop, max_drop = drop.split(" - ")
                     min_drop, max_drop = float(min_drop), float(max_drop)
@@ -143,7 +157,7 @@ class JsonParser:
             for name, drop in butins.items():
                 drop = drop.replace(" %", "")
                 if " - " not in drop:
-                    butins[name] = float(drop)
+                    butins[name] = (float(drop), float(drop))
                 else:
                     min_drop, max_drop = drop.split(" - ")
                     min_drop, max_drop = float(min_drop), float(max_drop)
@@ -175,7 +189,7 @@ class JsonParser:
                 parsed[element] = (min_res, max_res)
             else:
                 res = int(values.replace("%", ""))
-                parsed[element] = res
+                parsed[element] = (res, res)
 
         self.parsed_data[name] = parsed
 
@@ -209,6 +223,12 @@ class JsonParser:
             [JsonParser.parse_effet(effet) for effet in bonus] for bonus in bonus_pano
         ]
 
+        # for list_buffs in self.parsed_data[name]:
+        #     for buff_id, buff in enumerate(list_buffs):
+        #         buff_name, buff_value = next(iter(buff.items()))
+        #         if buff_name != "Spécial":
+        #             list_buffs[buff_id] = {buff_name: buff_value[0]}
+
     def parse_caracteristiques(self, name: str, caracs: list[str]):
         self.parsed_data[name] = dict()
 
@@ -234,7 +254,9 @@ class JsonParser:
                 groups = match_numbers.groups()
                 numbers = [int(n) for n in groups[1:] if n is not None]
                 if len(numbers) == 1:
-                    self.parsed_data[name][key] = numbers[0]
+                    self.parsed_data[name][key] = (
+                        numbers[0] if key in NON_TUPLE_KEY else (numbers[0], numbers[0])
+                    )
                 else:
                     self.parsed_data[name][key] = tuple(numbers)
                 continue
@@ -257,7 +279,7 @@ class JsonParser:
                 if cc_bonus is not None:
                     self.parsed_data[name]["CC bonus"] = int(cc_bonus)
 
-    def parse_containers(self, c_name: str, c_value: dict):
+    def parse_containers(self, _: str, c_value: dict):
         parsing_methods = {
             "bonus": self.parse_bonus,
             "bonus de la panoplie": self.parse_bonus_pano,
@@ -307,9 +329,9 @@ class JsonParser:
         values = re.search(values_r, effet).group()
         if "à" in values:
             min_value, max_value = values.split("à ")
-            values = int(min_value), int(max_value)
+            values = (int(min_value), int(max_value))
         else:
-            values = int(values)
+            values = (int(values), int(values))
 
         # Check for buff
         buff = re.search(BUFF_REGEX, effet)
@@ -321,7 +343,7 @@ class JsonParser:
         dmg = re.search(DMG_REGEX, effet).group()
         dmg = dmg[1:-1]  # Remove parenthesis
         if dmg == "PV rendus":
-            return {"dégâts": {dmg: values}}
+            return {"PV rendus": {dmg: values}}
 
         dmg_type, element = dmg.split(" ")
         return {

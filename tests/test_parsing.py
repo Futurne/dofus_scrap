@@ -66,10 +66,8 @@ def test_resistances_parsing(to_parse: list[str], result: dict):
         (
             ["Bonus d'expérience 50", "Bonus de butin 10"],
             {
-                "bonus": {
-                    "Bonus d'expérience": 50,
-                    "Bonus de butin": 10,
-                }
+                "Bonus d'expérience": 50,
+                "Bonus de butin": 10,
             },
         ),
     ],
@@ -87,7 +85,7 @@ def test_bonus_parsing(to_parse: list[str], result: dict):
             ["Some item | 10.3 %", "Some other item | 10.5 - 35 %"],
             {
                 "butins": {
-                    "Some item": 10.3,
+                    "Some item": (10.3, 10.3),
                     "Some other item": (10.5, 35),
                 }
             },
@@ -99,12 +97,12 @@ def test_bonus_parsing(to_parse: list[str], result: dict):
             ],
             {
                 "butins": {
-                    "Some item": 10.3,
+                    "Some item": (10.3, 10.3),
                     "Some other item": (10.5, 35),
                 },
                 "butins conditionnés": {
-                    "Conditional item": 3.5,
-                    "Another one": 50.7,
+                    "Conditional item": (3.5, 3.5),
+                    "Another one": (50.7, 50.7),
                 },
             },
         ),
@@ -221,8 +219,8 @@ def test_composition_pano_parsing(to_parse: str, result: dict):
             {
                 "caractéristiques": {
                     "PV": (4700, 8000),
-                    "PA": 1,
-                    "PM": -3,
+                    "PA": (1, 1),
+                    "PM": (-3, -3),
                 }
             },
         ),  # Monstres
@@ -232,7 +230,7 @@ def test_composition_pano_parsing(to_parse: str, result: dict):
                 "caractéristiques": {
                     "PA": 4,
                     "utilisations": 1,
-                    "Portée": 1,
+                    "Portée": (1, 1),
                     "CC": (1, 30),
                     "CC bonus": 15,
                 }
@@ -277,8 +275,8 @@ def test_caracteristiques_parsing(to_parse: str, result: dict):
             ],
             {
                 "bonus de la panoplie": [
-                    [{"Vitalité": 2}, {"Initiative": 2}],
-                    [{"Vitalité": 3}, {"Initiative": 3}, {"Agilité": 3}],
+                    [{"Vitalité": (2, 2)}, {"Initiative": (2, 2)}],
+                    [{"Vitalité": (3, 3)}, {"Initiative": (3, 3)}, {"Agilité": (3, 3)}],
                 ]
             },
         ),
@@ -304,7 +302,7 @@ def test_bonus_pano_parsing(to_parse: list[Union[str, list[str]]], result: dict)
         ),  # Basic effet
         (
             ["-6 à -4 Force", "-1 PA"],
-            {"effets": {"Force": (-6, -4), "PA": -1}},
+            {"effets": {"Force": (-6, -4), "PA": (-1, -1)}},
         ),  # Basic multiple effects and negative values
         (
             ["4 à 6 Force", "This is a special effect", "This is another"],
@@ -332,17 +330,17 @@ def test_bonus_pano_parsing(to_parse: list[Union[str, list[str]]], result: dict)
             ],
             {
                 "effets": {
-                    "Dommage(s)": 1,
+                    "Dommage(s)": (1, 1),
                     "% Critique": (2, 4),
                     "Dommage(s) Terre": (3, 6),
                     "Dommage(s) Feu": (3, 6),
-                    "Puissance (pièges)": 1,
-                    "Dommage(s) Pièges": 3,
+                    "Puissance (pièges)": (1, 1),
+                    "Dommage(s) Pièges": (3, 3),
                     "Puissance": (25, 30),
                 },
                 "dégâts": [
                     {"Neutre": (6, 10), "vol": False},
-                    {"Feu": 10, "vol": True},
+                    {"Feu": (10, 10), "vol": True},
                 ],
             },
         ),  # Dommage testing

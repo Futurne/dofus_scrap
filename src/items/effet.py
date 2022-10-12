@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from operator import xor
-from typing import Optional
+from typing import Optional, Union
 
 from src.items.buff import Buff
 
@@ -11,11 +11,11 @@ class Effet:
     def __init__(
         self,
         buff: Buff,
-        values: Optional[tuple[int, int]] = None,
+        values: Optional[Union[tuple[int, int], list[int]]] = None,
         special: Optional[str] = None,
     ):
         self.buff = buff
-        self.values = values
+        self.values = tuple(values) if values else values
         self.special = special
 
         assert xor(values is None, special is None)  # One of them has to be None
@@ -33,14 +33,7 @@ class Effet:
         buff = next(iter(effet))
         if buff == "Spécial":
             return Effet(Buff(buff), special=effet[buff])
-
-        match effet[buff]:
-            case int() as a:
-                return Effet(Buff(buff), (a, a))
-            case [a, b]:
-                return Effet(Buff(buff), (a, b))
-            case _:
-                raise RuntimeError(f"Unknown effect {effet}")
+        return Effet(Buff(buff), effet[buff])
 
     @staticmethod
     def from_multiple(effets: dict) -> list:

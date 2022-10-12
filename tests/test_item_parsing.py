@@ -85,7 +85,7 @@ def test_effet_parsing():
     assert Effet.from_dict(parsed_json) == parsed_object
 
     parsed_json = {
-        "Portée": 1,
+        "Portée": (1, 1),
     }
     parsed_object = Effet(Buff("Portée"), (1, 1))
     assert Effet.from_dict(parsed_json) == parsed_object
@@ -152,15 +152,15 @@ def test_panoplie_parsing():
         "Type": "Panoplie",
         "bonus de la panoplie": [
             [
-                {"Chance": 50},
-                {"Résistance(s) Critiques": 15},
-                {"Résistance(s) Poussée": 30},
+                {"Chance": (50, 50)},
+                {"Résistance(s) Critiques": (15, 15)},
+                {"Résistance(s) Poussée": (30, 30)},
             ],
             [
-                {"Chance": 50},
-                {"Résistance(s) Critiques": 15},
-                {"Résistance(s) Poussée": 30},
-                {"PA": 1},
+                {"Chance": (50, 50)},
+                {"Résistance(s) Critiques": (15, 15)},
+                {"Résistance(s) Poussée": (30, 30)},
+                {"PA": (1, 1)},
             ],
         ],
         "composition": [
@@ -226,7 +226,7 @@ def test_arme_parsing():
         "caractéristiques": {
             "PA": 5,
             "utilisations": 1,
-            "Portée": 1,
+            "Portée": [1, 1],
             "CC": [1, 5],
             "CC bonus": 4,
         },
@@ -240,14 +240,14 @@ def test_arme_parsing():
     }
 
     effets = [
-        Effet(Buff("Vitalité"), (201, 250)),
-        Effet(Buff("Force"), (41, 60)),
-        Effet(Buff("Agilité"), (41, 60)),
+        Effet(Buff("Vitalité"), [201, 250]),
+        Effet(Buff("Force"), [41, 60]),
+        Effet(Buff("Agilité"), [41, 60]),
     ]
     degats = [
-        Degat("Neutre", (15, 19), False),
-        Degat("Air", (21, 27), False),
-        Degat("Terre", (8, 11), True),
+        Degat("Neutre", [15, 19], False),
+        Degat("Air", [21, 27], False),
+        Degat("Terre", [8, 11], True),
     ]
     other_properties = {
         "effets": effets,
@@ -259,8 +259,8 @@ def test_arme_parsing():
         "caractéristiques": {
             "PA": 5,
             "utilisations": 1,
-            "Portée": (1, 1),
-            "CC": (1, 5),
+            "Portée": [1, 1],
+            "CC": [1, 5],
             "CC bonus": 4,
         },
         "conditions": ConditionsNoeud.from_dict(parsed_json["conditions"]),

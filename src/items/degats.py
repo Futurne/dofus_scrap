@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Union
+
 ELEMENTS = {
     "Air",
     "Eau",
@@ -14,11 +16,11 @@ class Degat:
     def __init__(
         self,
         element: str,
-        values: tuple[int, int],
+        values: Union[tuple[int, int], list[int]],
         vol: bool,
     ):
         self.element = element
-        self.values = values
+        self.values = tuple(values)
         self.vol = vol
 
         assert element in ELEMENTS
@@ -29,14 +31,6 @@ class Degat:
     @staticmethod
     def from_dict(degat: dict):
         vol = degat.pop("vol")
-
         element = next(iter(degat))
-        match degat[element]:
-            case int() as a:
-                values = (a, a)
-            case [a, b]:
-                values = (a, b)
-            case _:
-                raise RuntimeError(f"Unknown damages {degat}")
-
+        values = degat[element]
         return Degat(element, values, vol)
