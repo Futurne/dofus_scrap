@@ -7,5 +7,4 @@ geckodriver.log
 *.zip
 
 # Python virtual environment
-/Pipfile.lock
 /requirements.txt
