@@ -5,3 +5,6 @@ geckodriver.log
 *.swp
 *.sav
 *.zip
+
+# Python virtual environment
+/requirements.txt
