@@ -1,13 +1,13 @@
 Parse items (1st order):
- * Consommable
+ * Consommable - OK
  * Ressource - OK
- * Équipement
+ * Équipement - OK
  * Bestiaire
  * Harnachement - OK
- * Objet d'apparat
+ * Objet d'apparat - OK
  * Montures
  * Compagnon - OK
- * Idole
- * Familier
- * Arme
+ * Idole - OK
+ * Familier - OK
+ * Arme - OK
  * Panoplie - OK
