@@ -4,7 +4,7 @@ on: ["pull_request", "push"]
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 jobs:
   tests:
