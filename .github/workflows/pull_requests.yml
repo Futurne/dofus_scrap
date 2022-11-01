@@ -50,4 +50,7 @@ jobs:
           pipenv run make code_style
           git add src tests *.py
           git commit -m "gh: applying code style"
+
+      - name: Push changes
+        run: |
           git push
