@@ -14,7 +14,7 @@ It is updated from time to time.
 2. Scrap all content from [the almanax](https://www.krosmoz.com/fr/almanax).
 3. Parse the data into a nice JSON and SQL database.
 
-The corresponding scripts can be launched periodically
+The corresponding scripts can be launched periodically.
 
 ## How it works
 ### Encyclopedia
@@ -36,7 +36,6 @@ After downloading raw data from the encyclopedia, we need to process this data t
 We first parse the raw data into consistent a JSON database, and then we parse those JSON files to get a `PostgreSQL` database.
 
 The SQL database model can be found in the `project_overview.drawio` file (use [drawio](https://www.draw.io/index.html) to read it).
-
 
 ## TODO
 * Parse JSON files to produce the SQL database.
