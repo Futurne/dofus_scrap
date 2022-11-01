@@ -1,6 +1,6 @@
 name: CI dofus
 
-on: ["pull_request"]
+on: ["pull_request", "push"]
 
 permissions:
   id-token: write
@@ -39,3 +39,7 @@ jobs:
       - name: Run tests
         run: |
           pipenv run make test
+
+      - name: Apply code style
+        run: |
+          pipenv run make code_style

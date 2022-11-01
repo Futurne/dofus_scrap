@@ -26,3 +26,7 @@ test: check-pipenv clean-test
 
 install-dependencies: clean-venv ## Install Python dependencies thanks to pipenv
 	pipenv install -r requirements.txt --dev
+
+code_style:
+	black src/ tests/ *.py
+	isort src/ tests/ *.py
