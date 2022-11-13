@@ -12,6 +12,7 @@ class AlmanaxPage:
         self.url = url
         self.page = requests.get(url)
         self.soup = BeautifulSoup(self.page.text, "html.parser")
+        self.page_content = self.page.text
 
     def boss_desc(self) -> str:
         desc = self.soup.find(

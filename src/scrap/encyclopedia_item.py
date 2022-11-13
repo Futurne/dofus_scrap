@@ -57,6 +57,7 @@ class ScrapItem:
         self.driver = driver
         self.url = url
         self.data = dict()  # Everything that is scrapped goes there
+        self.page_content = None
 
     def get_containers(self) -> dict[str, WebElement]:
         """List all valid containers in the webpage.
@@ -129,6 +130,8 @@ class ScrapItem:
 
         if self.error_404:
             return
+
+        self.page_content = self.driver.page_source
 
         self.update_all_forms()
 
